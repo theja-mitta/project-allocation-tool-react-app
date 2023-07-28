@@ -36,3 +36,12 @@
     transform: rotate(360deg);
   }
 }
+
+
+.background-container {
+  background-image: url("assets/desktop-wallpaper-what-makes-a-human-resource-management-system-unique-human-resources.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+}

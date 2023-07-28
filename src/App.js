@@ -1,25 +1,41 @@
-import logo from './logo.svg';
+// App.js
+import React from 'react';
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Login } from './pages/Login.Page';
+import { Register } from './pages/Register.Page';
+import NotFound from './pages/NotFound.Page';
+import UserDashboard from './pages/Dashboard.Page';
+import Header from './components/Header';
+import Layout from './containers/Layout';
 
-function App() {
+const App = () => {
+  // const userRole = useSelector((state) => state.auth.userRole);
+  // const userPermissions = useSelector(state => state.auth.userPermissions);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Router>
+        <div>
+          {/* Fixed header with App Menu */}
+          {/* <header>
+            <Header />
+          </header> */}
+
+          {/* Main Content */}
+          <Layout>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/dashboard" element={<UserDashboard />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </div>
+      </Router>
     </div>
   );
-}
+};
 
 export default App;
