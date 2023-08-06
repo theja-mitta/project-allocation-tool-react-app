@@ -68,11 +68,55 @@ export class ProjectAllocationService {
         try {
             const response = await axios.get(`${PROJECT_ALLOCATION_SERVICE_BASE_URL}/api/v1/applications/details?openingId=${openingId}&candidateId=${userId}`, { headers: {"Authorization" : `Bearer ${authToken}`} });
             console.log('response', response);
-;            return response.data;
+            return response.data;
         } catch (error) {
             console.error(error);
         }
     };
+
+    static handleAllocateApplicant = async (applicationId, authToken) => {
+        try {
+          const response = await fetch(`${PROJECT_ALLOCATION_SERVICE_BASE_URL}/api/v1/applications/${applicationId}/status?newStatus=ALLOCATED`, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+              'Content-Type': 'application/json' // Make sure to set the content type
+            },
+          });
+      
+          if (response.ok) {
+            console.log('Application status updated successfully');
+            // Refresh data or perform any other necessary actions
+          } else {
+            console.error('Failed to update application status');
+          }
+        } catch (error) {
+          console.error('Error updating application status:', error);
+        }
+      };
+
+      static handleRejectApplicant = async (applicationId, authToken) => {
+        try {
+          const response = await fetch(`${PROJECT_ALLOCATION_SERVICE_BASE_URL}/api/v1/applications/${applicationId}/status?newStatus=REJECTED`, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+              'Content-Type': 'application/json' // Make sure to set the content type
+            },
+          });
+      
+          if (response.ok) {
+            console.log('Application status rejected successfully');
+            // Refresh data or perform any other necessary actions
+          } else {
+            console.error('Failed to update application status');
+          }
+        } catch (error) {
+          console.error('Error updating application status:', error);
+        }
+      };
+      
+                  
 
     static applyForOpening = async(openingId, userId, authToken) => {
         try {

@@ -168,6 +168,41 @@ const PendingApplicationsList = () => {
     setIsInterviewModalOpen(true);
   };
 
+  const handleAllocateApplicant = (applicationId) => {
+    console.log('AllocateApplicant', applicationId);
+    ProjectAllocationService.handleAllocateApplicant(applicationId, authToken)
+      .then(() => {
+        // Update the application status to ALLOCATED in the frontend
+        setPendingApplications((prevApplications) =>
+          prevApplications.map((app) =>
+            app.id === applicationId ? { ...app, status: "ALLOCATED" } : app
+          )
+        );
+        console.log('Applicant allocated successfully');
+      })
+      .catch((error) => {
+        console.error('Error allocating applicant:', error);
+      });
+  };
+
+  const handleRejectApplication = (applicationId) => {
+    console.log('RejectApplicant', applicationId);
+    ProjectAllocationService.handleRejectApplicant(applicationId, authToken)
+      .then(() => {
+        // Update the application status to REJECTED in the frontend
+        setPendingApplications((prevApplications) =>
+          prevApplications.map((app) =>
+            app.id === applicationId ? { ...app, status: "REJECTED" } : app
+          )
+        );
+        console.log('Applicant rejected successfully');
+      })
+      .catch((error) => {
+        console.error('Error rejecting applicant:', error);
+      });
+  };
+  
+
   return (
     <Grid container spacing={2} style={{ maxWidth: '1200px', margin: '0 auto', backgroundColor: 'white', padding: '20px', borderRadius: '4px'  }}>
       <Grid item xs={12}>
@@ -215,11 +250,16 @@ const PendingApplicationsList = () => {
                     Candidate Details
                   </Typography>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" colSpan={3}>
                   <Typography variant="subtitle1" fontWeight="bold">
                     Actions
                   </Typography>
                 </TableCell>
+                {/* <TableCell align="center">
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    Allocate Applicant
+                  </Typography>
+                </TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -239,7 +279,7 @@ const PendingApplicationsList = () => {
                       View Candidate Profile
                     </Button>
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell align="center" colSpan={3}>
                     <Button 
                         variant="contained"
                         color="primary"
@@ -250,7 +290,45 @@ const PendingApplicationsList = () => {
                     <Link component="button" variant="body2" onClick={() => handleViewScheduledInterviews(application.id)}>
                       View Scheduled Interviews
                     </Link>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      style={{ width: 150 }}
+                      onClick={() => handleAllocateApplicant(application.id)}
+                      disabled={application.status === "ALLOCATED"}
+                    >
+                      Accept Application
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      style={{ width: 150 }}
+                      onClick={() => handleRejectApplication(application.id)}
+                      disabled={application.status === "REJECTED" || application.status === "ALLOCATED"}
+                    >
+                      Reject Application
+                    </Button>
                   </TableCell>
+                  {/* <TableCell align="center" rowSpan={2}>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      style={{ width: 150 }}
+                      onClick={() => handleAllocateApplicant(application.id)}
+                      disabled={application.status === "ALLOCATED"}
+                    >
+                      Allocate Applicant
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      style={{ width: 150 }}
+                      onClick={() => handleRejectApplication(application.id)}
+                      disabled={application.status === "REJECTED" || application.status === "ALLOCATED"}
+                    >
+                      Reject Application
+                    </Button>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

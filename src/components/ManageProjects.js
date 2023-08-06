@@ -18,7 +18,8 @@ import {
   AppBar,
   Box,
   Typography,
-  DialogContentText
+  DialogContentText,
+  Container
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
@@ -81,106 +82,102 @@ const handleViewAllocatedEmployees = (allocatedUsers) => {
   };
 
   return (
-    <div style={{ backgroundColor: 'white', borderRadius: '4px' }}>
-      <AppBar position="static" style={{ backgroundColor: 'transparent', color: 'black' }}>
-        <Tabs value={tabValue} onChange={handleTabChange}>
-          <Tab label="Manage Projects" />
-          <Tab label="Create Project" />
-        </Tabs>
-      </AppBar>
-      <TabPanel value={tabValue} index={0}>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ textAlign: 'center', fontWeight: 'bold' }}>Title</TableCell>
-                <TableCell style={{ textAlign: 'center', fontWeight: 'bold' }}>Details</TableCell>
-                <TableCell style={{ textAlign: 'center', fontWeight: 'bold' }}>Allocated Employees</TableCell>
-                <TableCell style={{ textAlign: 'center', fontWeight: 'bold' }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {projects.map((project) => (
-                <TableRow key={project.id}>
-                  <TableCell style={{ textAlign: 'center' }}>{project.title}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{project.details}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    <Button onClick={() => handleViewAllocatedEmployees(project.allocatedUsers)}>
-                      View Allocated Employees
-                    </Button>
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    <Button onClick={() => handleEditProject(project)}>Edit</Button>
-                    <Button>Delete</Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </TabPanel>
-      <TabPanel value={tabValue} index={1}>
-  {/* Create Project Form */}
-  <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-    <TextField label="Project Title" fullWidth style={{ marginBottom: '10px' }} />
-    <TextField label="Project Details" fullWidth multiline style={{ marginBottom: '10px' }} />
-    <Button>Create Project</Button>
-  </div>
-</TabPanel>
-
-
-<Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-  <DialogTitle>Edit Project</DialogTitle>
-  <DialogContent>
-    {selectedProject && (
-      <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <TextField
-          label="Title"
-          value={selectedProject.title}
-          onChange={(e) =>
-            setSelectedProject({ ...selectedProject, title: e.target.value })
-          }
-          fullWidth
-          style={{ marginBottom: '10px' }}
-        />
-        <TextField
-          label="Details"
-          value={selectedProject.details}
-          onChange={(e) =>
-            setSelectedProject({ ...selectedProject, details: e.target.value })
-          }
-          fullWidth
-          multiline
-          style={{ marginBottom: '10px' }}
-        />
-      </div>
-    )}
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseEditDialog}>Cancel</Button>
-    <Button onClick={handleSaveProject}>Save</Button>
-  </DialogActions>
-</Dialog>
-{/* Dialog to view allocated employees */}
-<Dialog
-  open={openAllocatedEmployeesDialog}
-  onClose={handleCloseAllocatedEmployeesDialog}
->
-  <DialogTitle>Allocated Employees</DialogTitle>
-  <DialogContent>
-    {allocatedEmployees.map((employee) => (
-      <DialogContentText key={employee.id}>
-        {employee.name} - {employee.email}
-      </DialogContentText>
-    ))}
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseAllocatedEmployeesDialog}>Close</Button>
-  </DialogActions>
-</Dialog>
-
-
-    </div>
+      <Container maxWidth="lg" style={{ marginTop: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
+          <AppBar position="static" style={{ backgroundColor: 'transparent', color: 'black' }}>
+            <Tabs value={tabValue} onChange={handleTabChange}>
+              <Tab label="Manage Projects" />
+              <Tab label="Create Project" />
+            </Tabs>
+          </AppBar>
+          <TabPanel value={tabValue} index={0}>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ textAlign: 'center', fontWeight: 'bold' }}>Title</TableCell>
+                    <TableCell style={{ textAlign: 'center', fontWeight: 'bold' }}>Details</TableCell>
+                    <TableCell style={{ textAlign: 'center', fontWeight: 'bold' }}>Allocated Employees</TableCell>
+                    <TableCell style={{ textAlign: 'center', fontWeight: 'bold' }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {projects.map((project) => (
+                    <TableRow key={project.id}>
+                      <TableCell style={{ textAlign: 'center' }}>{project.title}</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>{project.details}</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        <Button onClick={() => handleViewAllocatedEmployees(project.allocatedUsers)}>
+                          View Allocated Employees
+                        </Button>
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        <Button onClick={() => handleEditProject(project)}>Edit</Button>
+                        <Button>Delete</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            {/* Create Project Form */}
+            <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+              <TextField label="Project Title" fullWidth style={{ marginBottom: '10px' }} />
+              <TextField label="Project Details" fullWidth multiline style={{ marginBottom: '10px' }} />
+              <Button>Create Project</Button>
+            </div>
+        </TabPanel>
+        <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
+          <DialogTitle>Edit Project</DialogTitle>
+          <DialogContent>
+            {selectedProject && (
+              <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+                <TextField
+                  label="Title"
+                  value={selectedProject.title}
+                  onChange={(e) =>
+                    setSelectedProject({ ...selectedProject, title: e.target.value })
+                  }
+                  fullWidth
+                  style={{ marginBottom: '10px' }}
+                />
+                <TextField
+                  label="Details"
+                  value={selectedProject.details}
+                  onChange={(e) =>
+                    setSelectedProject({ ...selectedProject, details: e.target.value })
+                  }
+                  fullWidth
+                  multiline
+                  style={{ marginBottom: '10px' }}
+                />
+              </div>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseEditDialog}>Cancel</Button>
+            <Button onClick={handleSaveProject}>Save</Button>
+          </DialogActions>
+        </Dialog>
+        {/* Dialog to view allocated employees */}
+        <Dialog
+          open={openAllocatedEmployeesDialog}
+          onClose={handleCloseAllocatedEmployeesDialog}
+        >
+          <DialogTitle>Allocated Employees</DialogTitle>
+          <DialogContent>
+            {allocatedEmployees.map((employee) => (
+              <DialogContentText key={employee.id}>
+                {employee.name} - {employee.email}
+              </DialogContentText>
+            ))}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseAllocatedEmployeesDialog}>Close</Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
   );
 };
 
