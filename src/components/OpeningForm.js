@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import {
   TextField,
   Button,
@@ -37,13 +38,21 @@ const OpeningForm = () => {
       const [projects, setProjects] = useState([]);
       const [successMessage, setSuccessMessage] = useState('');
       const [errors, setErrors] = useState(initialErrors);
+      const loggedinUser = useSelector((state) => state.auth.user);
+      const authToken = useSelector(state => state.auth.authToken);
 
   useEffect(() => {
+
     // Fetch skills from API and set them in the state
     const fetchSkills = async () => {
       try {
-        const skillsData = await ProjectAllocationService.getSkills();
-        setSkills(skillsData);
+        const skillsData = await ProjectAllocationService.getSkills(authToken);
+        // Filter out duplicate skills based on their 'id' property
+        const uniqueSkillsData = Array.from(
+          new Map(skillsData.map((skill) => [skill.id, skill])).values()
+        );
+        console.log(uniqueSkillsData);  
+        setSkills(uniqueSkillsData);
       } catch (error) {
         console.error('Error fetching skills:', error);
       }
@@ -52,8 +61,8 @@ const OpeningForm = () => {
     // Fetch projects from API and set them in the state
     const fetchProjects = async () => {
       try {
-        const projectsData = await ProjectAllocationService.getProjects();
-        console.log(projectsData);
+        const projectsData = await ProjectAllocationService.getProjects(authToken);
+        console.log('projectsData', projectsData);
         setProjects(projectsData);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -172,15 +181,18 @@ const OpeningForm = () => {
         level: formData.level,
         location: formData.location,
         skills: formData.skills.map((skillId) => ({ id: skillId })),
+        recruiter: {
+          id: loggedinUser.id,
+        },
       };
 
-      console.log(projectId, payload);
       const isValid = validateForm();
 
       if (isValid) {
         const response = await ProjectAllocationService.createOpening(
           projectId,
-          payload
+          payload,
+          authToken
         );
         console.log('Opening created:', response.data);
         setSuccessMessage('Opening created successfully!');
@@ -202,6 +214,9 @@ const OpeningForm = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '70vh',
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '4px',
       }}
     >
       <Typography variant="h5" gutterBottom>
@@ -305,26 +320,27 @@ const OpeningForm = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <FormControl fullWidth error={Boolean(errors.project)}>
-              <InputLabel>Project</InputLabel>
-              <Select
-                label="Project"
-                name="project"
-                value={formData.project}
-                onChange={handleChange}
-              >
-                {projects.map((project) => (
+          <FormControl fullWidth error={Boolean(errors.project)}>
+            <InputLabel>Project</InputLabel>
+            <Select
+              label="Project"
+              name="project"
+              value={formData.project}
+              onChange={handleChange}
+            >
+              {Array.isArray(projects) &&
+                projects.map((project) => (
                   <MenuItem key={project.id} value={project.id}>
                     {project.title}
                   </MenuItem>
                 ))}
-              </Select>
-              {Boolean(errors.project) && (
-                <Typography variant="caption" color="error">
-                  {errors.project}
-                </Typography>
-              )}
-            </FormControl>
+            </Select>
+            {Boolean(errors.project) && (
+              <Typography variant="caption" color="error">
+                {errors.project}
+              </Typography>
+            )}
+        </FormControl>
           </Grid>
         </Grid>
         <Grid

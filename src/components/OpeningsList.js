@@ -22,47 +22,35 @@ import {
   DialogActions,
   TextField,
   Link,
+  Pagination
 } from '@mui/material';
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
 import ApplicationDetails from './ApplicationDetails';
 
-const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
-  const userPermissions = useSelector((state) => state.auth.userPermissions);
+const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
+  const authToken = useSelector(state => state.auth.authToken);
   const [openings, setOpenings] = useState([]);
   const [skillsFilter, setSkillsFilter] = useState([]);
   const [levelFilter, setLevelFilter] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [filteredOpenings, setFilteredOpenings] = useState([]);
   const [appliedOpenings, setAppliedOpenings] = useState(new Set());
-  const [selectedOpeningId, setSelectedOpeningId] = useState(null);
   const [uniqueSkills, setUniqueSkills] = useState([]);
   const [uniqueLevels, setUniqueLevels] = useState([]);
   const [uniqueLocations, setUniqueLocations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null);
-  const [applicationIdMap, setApplicationIdMap] = useState({});
+  const [pageSize, setPageSize] = useState(3);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedOpeningId, setSelectedOpeningId] = useState(null);
 
-  // State to store the application details
-  const [applicationData, setApplicationData] = useState(null);
-
-  // State to store the applicationId for the dialog
-  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
-
-  // Function to fetch application details
-  const fetchApplicationDetails = async (applicationId) => {
-    try {
-      const applicationDetails = await ProjectAllocationService.getApplicationDetails(applicationId);
-      setApplicationData(applicationDetails);
-    } catch (error) {
-      // Handle error if the API call fails
-      console.log(error);
-    }
-  };
+  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
   const applyToOpening = async (openingId, userId) => {
     try {
       // Make the API call to apply for the opening
-      const response = await ProjectAllocationService.applyForOpening(openingId, userId);
+      const response = await ProjectAllocationService.applyForOpening(openingId, userId, authToken);
       // Process the response if needed
       console.log(response);
 
@@ -84,70 +72,51 @@ const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
   // Function to handle click of "View application details" link
   const handleViewApplicationDetails = (openingId) => {
     // Set the selectedApplicationId to open the dialog and show the application details
-    setSelectedApplicationId(applicationIdMap[openingId]);
+    setSelectedOpeningId(openingId);
+    setIsApplicationModalOpen(true);
+  };
+
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage - 1); // Subtract 1 from newPage to convert to zero-based index
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch all openings and applications
-        let projectOpenings = await ProjectAllocationService.getProjectOpenings();
-        let applications = await ProjectAllocationService.getAllApplications();
-
-        // Filter openings based on user type and showApplied flag
+        let response;  
         if (userType === 'employee') {
-          // For employees, filter applications based on the logged-in user ID
-          applications = applications.filter((application) => application.candidate.id === loggedinUser.id);
-          const appliedOpeningIds = applications.map((application) => application.opening.id);
-
-          if (showApplied) {
-            // For employees viewing applied openings
-            projectOpenings = projectOpenings.filter((opening) => appliedOpeningIds.includes(opening.id));
-          } else {
-            // For employees viewing unapplied openings
-            projectOpenings = projectOpenings.filter((opening) => !appliedOpeningIds.includes(opening.id));
-          }
-        } else if (userType === 'recruiter') {
-          // For recruiters, show only their own openings
-          projectOpenings = projectOpenings.filter((opening) => opening.recruiter.id === loggedinUser.id);
+          response = await ProjectAllocationService.getProjectOpenings(authToken, pageSize, currentPage, showApplied ? true : false);
+        } else if (userType === 'recruiter' || userType === 'admin') {
+          response = await ProjectAllocationService.getProjectOpenings(authToken, pageSize, currentPage, undefined, ownOpenings ? true : false);
         }
+  
+        const projectOpenings = response.openings;
+        const totalElements = response.totalElements;
+  
+          // Calculate total pages for pagination
+        const calculatedTotalPages = Math.ceil(totalElements / pageSize);
+        setTotalPages(calculatedTotalPages);
 
-        // Create a mapping of openingId to applicationId
-        const applicationIdMap = {};
-        applications.forEach((application) => {
-          applicationIdMap[application.opening.id] = application.id;
-        });
-
-        // Update the openings state with the filtered openings
-        setOpenings(projectOpenings);
-
-        // Set the appliedOpenings state with a Set containing applied opening IDs
-        const appliedOpeningIds = applications.map((application) => application.opening.id);
-        setAppliedOpenings(new Set(appliedOpeningIds));
-
-        // Filter applied openings for renderEmployeeAppliedOpenings
-        if (showApplied) {
-          const filteredAppliedOpenings = projectOpenings.filter((opening) =>
-            appliedOpeningIds.includes(opening.id)
-          );
-          setFilteredOpenings(filteredAppliedOpenings);
-        }
-
-        // Update the mapping of openingId to applicationId
-        setApplicationIdMap(applicationIdMap);
+      // Update the openings state with the received data
+      setOpenings(projectOpenings);
+  
+        // Rest of your code to filter and update projectOpenings based on userType
       } catch (error) {
-        // Handle the error here
-        console.log(error);
+        // Handle error
       }
     };
-
+  
     fetchData();
-  }, [loggedinUser, showApplied, userType]);
+  }, [loggedinUser, showApplied, userType, pageSize, currentPage]);
+  
 
   useEffect(() => {
     if (openings.length > 0) {
       // Calculate unique skills, levels, and locations after 'openings' is available
-      const uniqueSkills = [...new Set(openings.flatMap((opening) => opening.skills))].sort();
+      const allSkills = openings.flatMap((opening) => opening.skills);
+      const uniqueSkills = allSkills.filter(
+        (skill, index, self) => self.findIndex((s) => s.id === skill.id) === index
+      );
       const uniqueLevels = [...new Set(openings.map((opening) => opening.level))].sort();
       const uniqueLocations = [...new Set(openings.map((opening) => opening.location))].sort();
       // Update state with the unique values
@@ -159,41 +128,52 @@ const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
 
   useEffect(() => {
     let filteredData = openings;
-
+  
     if (skillsFilter.length > 0) {
-      filteredData = filteredData.filter((opening) =>
-        skillsFilter.some((selectedSkillId) =>
-          opening.skills?.some((skill) => skill.id === selectedSkillId)
+      filteredData = filteredData.filter(opening =>
+        skillsFilter.some(selectedSkillId =>
+          opening.skills?.some(skill => skill.id === selectedSkillId)
         )
       );
     }
-
+  
     if (levelFilter) {
-      filteredData = filteredData.filter((opening) => opening.level === levelFilter);
+      filteredData = filteredData.filter(opening => opening.level === levelFilter);
     }
-
+  
     if (locationFilter) {
-      filteredData = filteredData.filter((opening) => opening.location === locationFilter);
+      filteredData = filteredData.filter(opening => opening.location === locationFilter);
     }
-
-    // Filter applied openings for renderEmployeeAppliedOpenings
-    if (userType === 'employee' && showApplied) {
-      filteredData = filteredData.filter((opening) => appliedOpenings.has(opening.id));
+  
+    if (showApplied && appliedOpenings.size > 0) {
+      filteredData = filteredData.filter(opening => appliedOpenings.has(opening.id));
     }
-
+  
+    if ((userType === 'recruiter' || userType === 'admin') && ownOpenings) {
+      filteredData = filteredData.filter(opening => opening.recruiter.id === loggedinUser.id);
+    }
+  
     setFilteredOpenings(filteredData);
-  }, [skillsFilter, levelFilter, locationFilter, openings, userType, showApplied, appliedOpenings]);
+  }, [skillsFilter, levelFilter, locationFilter, openings, userType, showApplied, appliedOpenings, ownOpenings, loggedinUser]);
+  
 
   const handleClearFilters = () => {
     setSkillsFilter([]);
     setLevelFilter('');
     setLocationFilter('');
+
+    if (userType === 'recruiter' || userType === 'admin') {
+      setFilteredOpenings(openings.filter(opening => opening.recruiter.id === loggedinUser.id));
+    }
   };
 
-  const handleApplyOpening = async (openingId) => {
+  const handleApplyOpening = async openingId => {
     if (!appliedOpenings.has(openingId)) {
-      // Call the applyToOpening function with the openingId and loggedin user id
       await applyToOpening(openingId, loggedinUser.id);
+
+      if (userType === 'recruiter' || userType === 'admin') {
+        setFilteredOpenings(openings.filter(opening => opening.recruiter.id === loggedinUser.id));
+      }
     }
   };
 
@@ -217,7 +197,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
       };
 
       // Make the API call with the payload
-      const response = await ProjectAllocationService.updateOpening(updatedOpening.id, payload);
+      const response = await ProjectAllocationService.updateOpening(updatedOpening.id, payload, authToken);
       // Process the response if needed
       console.log(response);
 
@@ -230,16 +210,18 @@ const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
 
   // Function to handle opening modal open and pre-fill form data
   const handleOpenModal = (opening) => {
-    setIsModalOpen(true);
-    setEditFormData({
-      id: opening.id,
-      title: opening.title,
-      details: opening.details,
-      skills: opening.skills.map((skill) => skill.id), // Pre-fill the skills field with skill IDs
-      level: opening.level,
-      location: opening.location,
-      // Add other opening properties as needed
-    });
+    // Show the "Edit" button only for the openings posted by the logged-in recruiter
+    if (userType === 'recruiter' || userType === 'admin') {
+      setIsModalOpen(true);
+      setEditFormData({
+        id: opening.id,
+        title: opening.title,
+        details: opening.details,
+        skills: opening.skills.map((skill) => skill.id),
+        level: opening.level,
+        location: opening.location,
+      });
+    }
   };
 
   // Function to handle changes in the form fields
@@ -278,6 +260,58 @@ const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
     setIsModalOpen(false);
   };
 
+  // Function to render action buttons based on user type
+  const renderActionButtons = (opening) => {
+    if (userType === 'recruiter' || userType === 'admin') {
+      return (
+        <Button variant="outlined" color="primary" onClick={() => handleOpenModal(opening)}>
+          Edit
+        </Button>
+      );
+    } else if (userType === 'employee') {
+      if (showApplied) {
+        return (
+          <Link
+            component="button"
+            variant="body2"
+            onClick={() => handleViewApplicationDetails(opening.id)}
+          >
+            View application details
+          </Link>
+        );
+      } else {
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleApplyOpening(opening.id)}
+          >
+            Apply
+          </Button>
+        );
+      }
+    }
+    return null;
+  };
+
+  // JSX for rendering opening rows
+  const renderOpeningRows = (openings) => {
+    return openings.map((opening) => (
+      <TableRow key={opening.id}>
+        <TableCell align="center">{opening.title}</TableCell>
+        <TableCell align="center">{opening.details}</TableCell>
+        <TableCell align="center">
+          {opening.skills.map((skill) => (
+            <Typography key={skill.id}>{skill.title}</Typography>
+          ))}
+        </TableCell>
+        <TableCell align="center">{opening.level}</TableCell>
+        <TableCell align="center">{opening.location}</TableCell>
+        <TableCell align="center">{renderActionButtons(opening)}</TableCell>
+      </TableRow>
+    ));
+  };
+
   // JSX for the Edit Opening Modal
   const renderEditModal = () => {
     if (!editFormData) return null;
@@ -294,7 +328,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
 
     return (
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <DialogTitle>Edit Opening</DialogTitle>
+        <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Edit Opening</DialogTitle>
         <DialogContent dividers>
           <TextField
             label="Title"
@@ -355,7 +389,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
   };
 
   return (
-    <Grid container spacing={2} style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <Grid container spacing={2} style={{ maxWidth: '1200px', margin: '0 auto', backgroundColor: 'white', padding: '20px', borderRadius: '4px'  }}>
       <Grid item xs={12} sm={4}>
         {/* Skills Filter */}
         <FormControl variant="outlined" fullWidth>
@@ -418,87 +452,84 @@ const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
         </Button>
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="h5" gutterBottom>
-          {showApplied ? 'Applied Openings' : 'Project Openings'}
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Title</TableCell>
-                <TableCell>Details</TableCell>
-                <TableCell>Skills</TableCell>
-                <TableCell>Experience level</TableCell>
-                <TableCell>Work location</TableCell>
-                <TableCell>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredOpenings.map((opening) => (
-                <TableRow key={opening.id}>
-                  <TableCell>{opening.title}</TableCell>
-                  <TableCell>{opening.details}</TableCell>
-                  <TableCell>
-                    {opening.skills.map((skill) => (
-                      <Typography key={skill.id}>{skill.title}</Typography>
-                    ))}
-                  </TableCell>
-                  <TableCell>{opening.level}</TableCell>
-                  <TableCell>{opening.location}</TableCell>
-                  <TableCell>
-                    {/* If userType is employee and showApplied is true, show "View application details" link */}
-                    {userType === 'employee' && showApplied && appliedOpenings.has(opening.id) && (
-                      <Link
-                        component="button"
-                        variant="body2"
-                        onClick={() => handleViewApplicationDetails(opening.id)}
-                      >
-                        View application details
-                      </Link>
-                    )}
-                    {/* If userType is employee and showApplied is false, show "Apply" button */}
-                    {userType === 'employee' && !showApplied && !appliedOpenings.has(opening.id) && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleApplyOpening(opening.id)}
-                      >
-                        Apply
-                      </Button>
-                    )}
-                    {/* If userType is recruiter, show "Edit" button */}
-                    {userType === 'recruiter' && hasManageOpeningsPermission(userPermissions) && (
-                      <Button variant="outlined" color="primary" onClick={() => handleOpenModal(opening)}>
-                        Edit
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Grid>
-      <Dialog open={selectedApplicationId !== null} onClose={() => setSelectedApplicationId(null)}>
-        <DialogTitle>Application Details</DialogTitle>
-        <DialogContent dividers>
-          <DialogContentText>
-            {/* Render the ApplicationDetails component if applicationData is available */}
-            {selectedApplicationId && (
-              <ApplicationDetails
-                applicationId={selectedApplicationId}
-                onClose={() => setSelectedApplicationId(null)}
-              />
-            )}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSelectedApplicationId(null)}>Close</Button>
-        </DialogActions>
-      </Dialog>
-      {/* Render the Edit Opening Modal */}
-      {renderEditModal()}
+      <Typography variant="h5" gutterBottom>
+        {showApplied ? 'Applied Opportunities' : 'Project Opportunities'}
+      </Typography>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Title
+                </Typography>
+              </TableCell>
+              <TableCell align="center">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Details
+                </Typography>
+              </TableCell>
+              <TableCell align="center">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Skills
+                </Typography>
+              </TableCell>
+              <TableCell align="center">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Experience level
+                </Typography>
+              </TableCell>
+              <TableCell align="center">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Work location
+                </Typography>
+              </TableCell>
+              <TableCell align="center">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Action
+                </Typography>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+              {renderOpeningRows(filteredOpenings)}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {/* Pagination */}
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
+          <Pagination
+            count={totalPages}
+            page={currentPage+1}
+            onChange={handlePageChange}
+            color="primary"
+            showFirstButton
+            showLastButton
+            shape="rounded"
+          />
+        </div>
     </Grid>
+    <Dialog open={isApplicationModalOpen} onClose={() => setIsApplicationModalOpen(false)}>
+      <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Application Details</DialogTitle>
+      <DialogContent dividers>
+        <DialogContentText>
+          {/* Render the ApplicationDetails component if applicationData is available */}
+          {isApplicationModalOpen && (
+            <ApplicationDetails
+              openingId={selectedOpeningId}
+              loggedinUser={loggedinUser}
+              onClose={() => setIsApplicationModalOpen(false)}
+            />
+          )}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setIsApplicationModalOpen(false)}>Close</Button>
+      </DialogActions>
+    </Dialog>
+    {/* Render the Edit Opening Modal */}
+    {renderEditModal()}
+  </Grid>
   );
 };
 

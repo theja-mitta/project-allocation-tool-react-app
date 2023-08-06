@@ -50,6 +50,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import { AuthService } from '../../services/api/auth';
+import { Token } from '@mui/icons-material';
 
 const initialState = {
   authToken: null,
@@ -89,6 +90,7 @@ export const { setAuthToken, setUserPermissions, setUserRole, setUser, resetStat
 
 // Thunk action to fetch user permissions after setting the auth token
 export const setAuthTokenAndFetchUserPermissions = (authToken) => async (dispatch) => {
+  console.log("authToken"+ authToken);
   try {
     dispatch(setAuthToken(authToken)); // Set the auth token in the state
 
@@ -98,6 +100,7 @@ export const setAuthTokenAndFetchUserPermissions = (authToken) => async (dispatc
     const userRole = await AuthService.getUserRole(authToken);
     dispatch(setUserRole(userRole));
     const user = await AuthService.getUser(authToken);
+    console.log('redux state user: ' + user);
     dispatch(setUser(user));
   } catch (error) {
     console.log(error);

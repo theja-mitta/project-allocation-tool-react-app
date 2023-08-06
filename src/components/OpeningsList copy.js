@@ -345,7 +345,7 @@ const OpeningsList = () => {
       )}
       {/* Dialog to show application details */}
       <Dialog open={selectedApplicationId !== null} onClose={handleCloseDialog}>
-        <DialogTitle>Application Details</DialogTitle>
+        <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Application Details</DialogTitle>
         <DialogContent dividers>
           <DialogContentText>
             {applicationData ? (

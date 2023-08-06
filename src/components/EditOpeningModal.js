@@ -58,7 +58,7 @@ const EditOpeningModal = ({
 
   return (
     <Dialog open={isModalOpen} onClose={handleCloseModal}>
-      <DialogTitle>Edit Opening</DialogTitle>
+      <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Edit Opening</DialogTitle>
       <DialogContent dividers>
         <TextField
           label="Title"

@@ -25,10 +25,12 @@ import {
 } from '@mui/material';
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
 import ApplicationDetails from './ApplicationDetails';
+import { useSelector } from 'react-redux';
 
 const OpeningsList = () => {
   const userPermissions = useSelector((state) => state.auth.userPermissions);
   const loggedinUser = useSelector((state) => state.auth.user);
+  const authToken = useSelector(state => state.auth.authToken);
   const [openings, setOpenings] = useState([]);
   const [skillsFilter, setSkillsFilter] = useState([]);
   const [levelFilter, setLevelFilter] = useState('');
@@ -52,7 +54,7 @@ const OpeningsList = () => {
   const fetchApplicationDetails = async (applicationId) => {
     console.log(applicationId);
     try {
-      const applicationDetails = await ProjectAllocationService.getApplicationDetails(applicationId);
+      const applicationDetails = await ProjectAllocationService.getApplicationDetails(applicationId, authToken);
       setApplicationData(applicationDetails);
     } catch (error) {
       // Handle error if the API call fails
@@ -63,7 +65,7 @@ const OpeningsList = () => {
   const applyToOpening = async (openingId, userId) => {
     try {
       // Make the API call to apply for the opening
-      const response = await ProjectAllocationService.applyForOpening(openingId, userId);
+      const response = await ProjectAllocationService.applyForOpening(openingId, userId, authToken);
       // Process the response if needed
       console.log(response);
 
@@ -94,8 +96,8 @@ const OpeningsList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const projectOpenings = await ProjectAllocationService.getProjectOpenings();
-        const applications = await ProjectAllocationService.getAllApplications();
+        const projectOpenings = await ProjectAllocationService.getProjectOpenings(authToken);
+        const applications = await ProjectAllocationService.getAllApplications(authToken);
 
         // Check if logged-in user exists and applications data is available
         if (loggedinUser && applications) {
@@ -280,7 +282,7 @@ const OpeningsList = () => {
 
     return (
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <DialogTitle>Edit Opening</DialogTitle>
+        <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Edit Opening</DialogTitle>
         <DialogContent dividers>
           <TextField
             label="Title"

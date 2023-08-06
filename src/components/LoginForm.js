@@ -75,7 +75,7 @@ const LoginForm = () => {
 
   return (
     <Container
-      maxWidth="xs"
+      maxWidth="sm" // Adjusted the maxWidth for a larger form
       sx={{
         display: "flex",
         justifyContent: "center",
@@ -84,7 +84,7 @@ const LoginForm = () => {
       }}
     >
       <Paper elevation={3} sx={{ padding: 3 }}>
-        <Typography variant="h5" gutterBottom>
+        <Typography  component="h1" variant="h5" gutterBottom align="center"> {/* Increased the heading size */}
           Login
         </Typography>
         <Box
@@ -92,6 +92,11 @@ const LoginForm = () => {
           noValidate
           sx={{ display: "flex", flexDirection: "column" }}
         >
+          <Typography variant="body1" sx={{ marginBottom: 2 }}>
+            Welcome back! You are logging in to the{" "}
+            <strong>Project Allocation Tool</strong>. If you are the right person,
+            please proceed.
+          </Typography>
           <TextField
             label="Email"
             variant="outlined"
@@ -106,6 +111,7 @@ const LoginForm = () => {
             inputProps={{
               pattern: "[^s@]+@[^s@]+.[^s@]+", // Validate email format
             }}
+            sx={{ mb: 2 }}
           />
           <TextField
             label="Password"
@@ -123,6 +129,7 @@ const LoginForm = () => {
             inputProps={{
               minLength: 6, // Minimum password length
             }}
+            sx={{ mb: 2 }}
           />
           {loginError && (
             <Typography variant="body2" color="error">

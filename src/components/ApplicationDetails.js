@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; // Add 'useEffect' and 'useState'
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -6,6 +6,7 @@ import {
   Typography,
   Divider,
 } from '@mui/material';
+import { useSelector } from 'react-redux';
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
 
 const labelStyle = {
@@ -16,30 +17,26 @@ const valueStyle = {
   marginBottom: '8px',
 };
 
-const ApplicationDetails = ({ applicationId, onClose }) => {
+const ApplicationDetails = ({ openingId, loggedinUser, onClose }) => {
+  const authToken = useSelector(state => state.auth.authToken);
   const [applicationData, setApplicationData] = useState(null);
 
-  // Function to fetch application details
-  const fetchApplicationDetails = async () => {
-    try {
-      // Replace 'fetchDataFromServer' with the actual function to fetch application details
-      const applicationDetails = await ProjectAllocationService.getApplicationDetails(applicationId);
-      setApplicationData(applicationDetails);
-    } catch (error) {
-      // Handle error if the API call fails
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    if (applicationId) {
-      // Fetch application details when applicationId changes
+    const fetchApplicationDetails = async () => {
+      try {
+        const applicationDetails = await ProjectAllocationService.fetchApplicationDetails(openingId, loggedinUser.id, authToken);
+        console.log(`Application details: ${applicationDetails}`);
+        setApplicationData(applicationDetails);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
       fetchApplicationDetails();
-    }
-  }, [applicationId]);
+  }, [openingId, loggedinUser]);
 
   if (!applicationData) {
-    return null; // Render nothing if applicationData is not available yet
+    return null;
   }
 
   return (
