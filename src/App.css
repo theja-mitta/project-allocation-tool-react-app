@@ -45,3 +45,29 @@
   background-position: center;
   min-height: 100vh;
 }
+
+.log-timeline {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 10px 0;
+}
+
+.log-timeline-dot {
+  width: 12px;
+  height: 12px;
+  background-color: #2196f3;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+}
+
+.log-timeline-line {
+  position: absolute;
+  top: 50%;
+  left: 6px; /* Adjust this value based on dot width */
+  right: 6px; /* Adjust this value based on dot width */
+  height: 2px;
+  background-color: #ccc;
+  z-index: 1;
+}

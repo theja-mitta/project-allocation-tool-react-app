@@ -61,7 +61,7 @@ const OpeningForm = () => {
     // Fetch projects from API and set them in the state
     const fetchProjects = async () => {
       try {
-        const projectsData = await ProjectAllocationService.getProjects(authToken);
+        const projectsData = await ProjectAllocationService.getAllProjects(authToken);
         console.log('projectsData', projectsData);
         setProjects(projectsData);
       } catch (error) {

@@ -20,8 +20,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Pagination
+  Pagination,
+  Tooltip
 } from '@mui/material';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import LastPageIcon from '@mui/icons-material/LastPage';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { ProjectAllocationService } from "../services/api/projectAllocationService";
 import CandidateDetails from './CandidateDetails';
 import ScheduleInterviewModal from './ScheduleInterviewModal';
@@ -81,7 +86,7 @@ const PendingApplicationsList = () => {
   const [selectedInterviewStatusToUpdate, setSelectedInterviewStatusToUpdate] = useState(null);
   const [updatedInterviewsMap, setUpdatedInterviewsMap] = useState({});
   const [page, setPage] = useState(0);  
-  const [rowsPerPage, setRowsPerPage] = useState(3);
+  const [rowsPerPage, setRowsPerPage] = useState(2);
   const [totalPages, setTotalPages] = useState(null);
 
   const handleUpdateInterview = (interviewId, currentStatus) => {
@@ -280,55 +285,47 @@ const PendingApplicationsList = () => {
                     </Button>
                   </TableCell>
                   <TableCell align="center" colSpan={3}>
-                    <Button 
+                    <div style={{ margin: '8px' }}>
+                      <Button 
                         variant="contained"
                         color="primary"
                         style={{ width: 150 }}
                         onClick={() => handleScheduleInterview(application.id)}>
-                      Schedule Interview
-                    </Button>
-                    <Link component="button" variant="body2" onClick={() => handleViewScheduledInterviews(application.id)}>
-                      View Scheduled Interviews
-                    </Link>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      style={{ width: 150 }}
-                      onClick={() => handleAllocateApplicant(application.id)}
-                      disabled={application.status === "ALLOCATED"}
-                    >
-                      Accept Application
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      style={{ width: 150 }}
-                      onClick={() => handleRejectApplication(application.id)}
-                      disabled={application.status === "REJECTED" || application.status === "ALLOCATED"}
-                    >
-                      Reject Application
-                    </Button>
+                        Schedule Interview
+                      </Button>
+                    </div>
+                    <div style={{ margin: '8px' }}>
+                      <Link component="button" variant="body2" onClick={() => handleViewScheduledInterviews(application.id)}>
+                        View Scheduled Interviews
+                      </Link>
+                    </div>
+                    <div style={{ margin: '8px' }}>
+                      <Tooltip title="Accept the application">
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          style={{ width: 150 }}
+                          onClick={() => handleAllocateApplicant(application.id)}
+                          disabled={application.status === "ALLOCATED"}
+                        >
+                          Accept
+                        </Button>
+                      </Tooltip>
+                    </div>
+                    <div style={{ margin: '8px' }}>
+                      <Tooltip title="Reject the application">
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          style={{ width: 150 }}
+                          onClick={() => handleRejectApplication(application.id)}
+                          disabled={application.status === "REJECTED" || application.status === "ALLOCATED"}
+                        >
+                          Reject
+                        </Button>
+                      </Tooltip>
+                    </div>
                   </TableCell>
-                  {/* <TableCell align="center" rowSpan={2}>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      style={{ width: 150 }}
-                      onClick={() => handleAllocateApplicant(application.id)}
-                      disabled={application.status === "ALLOCATED"}
-                    >
-                      Allocate Applicant
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      style={{ width: 150 }}
-                      onClick={() => handleRejectApplication(application.id)}
-                      disabled={application.status === "REJECTED" || application.status === "ALLOCATED"}
-                    >
-                      Reject Application
-                    </Button>
-                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

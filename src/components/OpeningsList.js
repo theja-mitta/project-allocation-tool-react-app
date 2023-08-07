@@ -22,7 +22,8 @@ import {
   DialogActions,
   TextField,
   Link,
-  Pagination
+  Pagination,
+  Tooltip
 } from '@mui/material';
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
 import ApplicationDetails from './ApplicationDetails';
@@ -177,10 +178,6 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
     }
   };
 
-  const hasManageOpeningsPermission = (userPermissions) => {
-    return userPermissions.includes('MANAGE_OPENINGS');
-  };
-
   // Function to save the edited opening data with an API call
   const saveUpdatedOpening = async (updatedOpening) => {
     try {
@@ -194,6 +191,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
         level: updatedOpening.level,
         location: updatedOpening.location,
         skills: skillIds,
+        status: updatedOpening.status
       };
 
       // Make the API call with the payload
@@ -220,6 +218,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
         skills: opening.skills.map((skill) => skill.id),
         level: opening.level,
         location: opening.location,
+        status: opening.status,
       });
     }
   };
@@ -245,6 +244,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
       skills: editFormData.skills.map((skillId) => uniqueSkills.find((skill) => skill.id === skillId)),
       level: editFormData.level,
       location: editFormData.location,
+      status: editFormData.status
       // Add other opening properties as needed
     };
 
@@ -264,30 +264,36 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
   const renderActionButtons = (opening) => {
     if (userType === 'recruiter' || userType === 'admin') {
       return (
-        <Button variant="outlined" color="primary" onClick={() => handleOpenModal(opening)}>
-          Edit
-        </Button>
+        <Tooltip title="Edit the opening details">
+          <Button variant="outlined" color="primary" onClick={() => handleOpenModal(opening)}>
+            Edit
+          </Button>
+        </Tooltip>
       );
     } else if (userType === 'employee') {
       if (showApplied) {
         return (
-          <Link
-            component="button"
-            variant="body2"
-            onClick={() => handleViewApplicationDetails(opening.id)}
-          >
-            View application details
-          </Link>
+          <Tooltip title="View application details">
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => handleViewApplicationDetails(opening.id)}
+            >
+              View application details
+            </Link>
+          </Tooltip>
         );
       } else {
         return (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleApplyOpening(opening.id)}
-          >
-            Apply
-          </Button>
+          <Tooltip title="Apply for the opening">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleApplyOpening(opening.id)}
+            >
+              Apply
+            </Button>
+          </Tooltip>
         );
       }
     }
@@ -325,6 +331,9 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
       // Check if there are any selected skills before joining them with commas
       return selectedSkills.length > 0 ? selectedSkills.join(', ') : '';
     };
+
+    // Array with possible status values
+    const statusOptions = ['ACTIVE', 'CLOSED'];
 
     return (
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -374,6 +383,21 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
             fullWidth
             margin="normal"
           />
+          {/* Dropdown for the "status" field */}
+          <FormControl variant="outlined" fullWidth margin="normal">
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={editFormData.status}
+              onChange={(e) => handleFormChange('status', e.target.value)}
+              label="Status"
+            >
+              {statusOptions.map((statusValue) => (
+                <MenuItem key={statusValue} value={statusValue}>
+                  {statusValue}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           {/* Add more form fields for other opening properties */}
         </DialogContent>
         <DialogActions>

@@ -25,7 +25,7 @@ const ScheduleInterviewModal = ({ applicationId, onClose, onInterviewScheduled }
 
   useEffect(() => {
     // Fetch the list of users to populate the interviewers dropdown
-    AuthService.getAllUsers(authToken)
+    AuthService.getAllUsersWithoutPagination(authToken)
       .then((users) => {
         setInterviewers(users);
         setSelectedInterviewer(users[0]?.id || ''); // Select the first user by default

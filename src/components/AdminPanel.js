@@ -21,7 +21,8 @@ import {
   FormControl,
   Select,
   MenuItem,
-  InputLabel
+  InputLabel,
+  Tooltip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -190,12 +191,16 @@ const AdminPanel = () => {
                   <TableCell align="center">{user.email}</TableCell>
                   <TableCell align="center">{user.role}</TableCell>
                   <TableCell align="center">
-                    <IconButton color="primary" onClick={() => handleEditUser(user)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton color="secondary" onClick={() => handleDeleteUser(user.id)}>
-                      <DeleteIcon />
-                    </IconButton>
+                    <Tooltip title="Edit the user details">
+                      <IconButton color="primary" onClick={() => handleEditUser(user)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete the user">
+                      <IconButton color="secondary" onClick={() => handleDeleteUser(user.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))

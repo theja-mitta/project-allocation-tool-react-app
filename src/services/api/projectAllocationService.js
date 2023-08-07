@@ -32,8 +32,7 @@ export class ProjectAllocationService {
         } catch (error) {
           throw new Error('Unable to get project openings');
         }
-      };
-      
+      };      
 
     static getProjectsForUser = async (authToken, userId) => {
         try {
@@ -140,6 +139,15 @@ export class ProjectAllocationService {
         }
     }
 
+    static updateOpeningStatus = async (openingId, newOpeningStatus, authToken) => {
+      try {
+          const response = await axios.patch(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/openings/' + openingId + '/status?newStatus=' + newOpeningStatus, { headers: {"Authorization" : `Bearer ${authToken}`} });
+          return response.status;
+        } catch (error) {
+          throw new Error('Unable to update the opening status');
+        }
+    }
+
     static getSkills = async (authToken) => {
         try {
             const response = await axios.get(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/skills', { headers: {"Authorization" : `Bearer ${authToken}`} });
@@ -158,14 +166,32 @@ export class ProjectAllocationService {
         }
     }
 
-    static getProjects = async (authToken) => {
+    static createProject = async (payload, authToken) => {
+      try {
+          const response = await axios.post(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/projects/', payload, { headers: {"Authorization" : `Bearer ${authToken}`} });
+          return response;
+      } catch (error) {
+          throw new Error('Unable to create the project');
+      }
+    }
+
+    static getProjects = async (pageSize, pageNumber, authToken) => {
         try {
-            const response = await axios.get(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/projects', { headers: {"Authorization" : `Bearer ${authToken}`} });
+            const response = await axios.get(`${PROJECT_ALLOCATION_SERVICE_BASE_URL}/api/v1/projects?pageSize=${pageSize}&pageNumber=${pageNumber}`, { headers: {"Authorization" : `Bearer ${authToken}`} });
             return response.data;
         } catch (error) {
             throw new Error('Unable to fetch the projects');
         }
     }
+
+    static getAllProjects = async (authToken) => {
+      try {
+          const response = await axios.get(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/projects/all', { headers: {"Authorization" : `Bearer ${authToken}`} });
+          return response.data;
+      } catch (error) {
+          throw new Error('Unable to fetch the projects');
+      }
+  }
 
     static getAllActivityLogs = async (authToken, pageSize, pageNumber) => {
         try {

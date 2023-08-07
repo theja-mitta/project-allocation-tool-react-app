@@ -19,6 +19,12 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts'; // Updated impo
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
 import { useSelector } from 'react-redux';
 
+const timePeriodTextMap = {
+  last_week: 'last week',
+  last_month: 'last month',
+  last_year: 'last year'
+};
+
 const CandidateAllocationDashboard = () => {
   const authToken = useSelector(state => state.auth.authToken);
   const [freePoolUsers, setFreePoolUsers] = useState([]);
@@ -111,9 +117,8 @@ const CandidateAllocationDashboard = () => {
         <Box width="50%" marginRight="20px">
           <Typography variant="h6" gutterBottom>
             {/* {selectedTimePeriod.charAt(0).toUpperCase() + selectedTimePeriod.slice(1)} Allocated Users */}
-            {selectedChartSection === 'free_pool' ? 'Free Pool Users' : 'Allocated Users'}
+            {selectedChartSection === 'free_pool' ? 'Free Pool Users' : `Allocated Users ${timePeriodTextMap[selectedTimePeriod]}`}
           </Typography>
-          <Paper style={{ padding: '20px' }}>
             {selectedChartSection === 'allocated' && (
               <TableContainer component={Paper}>
                 <Table>
@@ -127,23 +132,31 @@ const CandidateAllocationDashboard = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {allocatedUsers.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell align='center'>{user.id}</TableCell>
-                        <TableCell align='center'>{user.name}</TableCell>
-                        <TableCell align='center'>{user.email}</TableCell>
-                        <TableCell align='center'>
-                          {user.projects && user.projects.length > 0
-                            ? user.projects.map((project) => project.title).join(', ')
-                            : 'No projects'}
-                        </TableCell>
-                        <TableCell align='center'>
-                          {user.skills && user.skills.length > 0
-                            ? user.skills.map((skill) => skill.title).join(', ')
-                            : 'N/A'}
+                    {allocatedUsers.length > 0 ? (
+                      allocatedUsers.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell align='center'>{user.id}</TableCell>
+                          <TableCell align='center'>{user.name}</TableCell>
+                          <TableCell align='center'>{user.email}</TableCell>
+                          <TableCell align='center'>
+                            {user.projects && user.projects.length > 0
+                              ? user.projects.map((project) => project.title).join(', ')
+                              : 'No projects'}
+                          </TableCell>
+                          <TableCell align='center'>
+                            {user.skills && user.skills.length > 0
+                              ? user.skills.map((skill) => skill.title).join(', ')
+                              : 'N/A'}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={5} align='center'>
+                          {`No candidates allocated ${timePeriodTextMap[selectedTimePeriod]}`}
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -186,7 +199,6 @@ const CandidateAllocationDashboard = () => {
               </Grid>
               </TableContainer>
             )}
-          </Paper>
         </Box>
         <Box width="50%">
           {/* <Typography variant="h6" gutterBottom>

@@ -68,6 +68,16 @@ export class AuthService {
         }
     };
 
+    static getAllUsersWithoutPagination = async (tokenStr) => {
+
+        try {
+            const response = await axios.get(`${USER_SERVICE_BASE_URL}/api/v1/users/interviewers`, { headers: {"Authorization" : `Bearer ${tokenStr}`} });
+            return response.data;
+        } catch (error) {
+            throw new Error('Invalid credentials. Please try again.');
+        }
+    };
+
     static updateUser = async (tokenStr, userId, updatedUser) => {
         try {
             const response = await axios.patch(`${USER_SERVICE_BASE_URL}/api/v1/users/${userId}`, updatedUser, { headers: {"Authorization" : `Bearer ${tokenStr}`} });

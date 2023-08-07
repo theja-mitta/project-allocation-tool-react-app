@@ -23,7 +23,12 @@ const EditProfileDialog = ({ open, onClose }) => {
     try {
       const response = await AuthService.getUser(authToken);
       setUserDetails(response);
-      setSelectedSkills(response.skills);
+      // Map skill IDs to their corresponding titles
+      const selectedSkillTitles = response.skills.map((skillObj) => {
+        const matchingSkill = allSkills.find((skill) => skill.id === skillObj.id);
+        return matchingSkill ? matchingSkill.title : null;
+      });
+    setSelectedSkills(selectedSkillTitles);
     } catch (error) {
       console.error('Error fetching user details:', error);
     }
@@ -76,10 +81,10 @@ const EditProfileDialog = ({ open, onClose }) => {
           // Add onChange handler for skills
         /> */}
         <FormControl fullWidth margin='normal'>
-          <InputLabel>Select Skills</InputLabel>
+          <InputLabel>Update Skills</InputLabel>
           <Select
             multiple
-            label="Select skills"
+            label="Update skills"
             value={selectedSkills}
             onChange={handleSkillChange}
             renderValue={(selected) => selected.join(', ')}
