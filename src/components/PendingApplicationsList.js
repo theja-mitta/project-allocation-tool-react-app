@@ -23,10 +23,6 @@ import {
   Pagination,
   Tooltip
 } from '@mui/material';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { ProjectAllocationService } from "../services/api/projectAllocationService";
 import CandidateDetails from './CandidateDetails';
 import ScheduleInterviewModal from './ScheduleInterviewModal';
@@ -46,7 +42,7 @@ const UpdateInterviewStatusDialog = ({ open, onClose, interviewId, currentStatus
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Update Interview Status</DialogTitle>
-      <DialogContent>
+      <DialogContent style={{ paddingTop: '30px' }}>
         <DialogContentText>
           <FormControl fullWidth>
             <InputLabel>Choose Status</InputLabel>
@@ -371,7 +367,7 @@ const PendingApplicationsList = () => {
                             onClick={() => handleUpdateInterview(interview.id, interview.status)}
                             disabled={updatedInterviewsMap[interview.id] || interview.status === "COMPLETED" || interview.status === "CANCELLED"}
                           >
-                            Update Interview
+                            Update Interview Status
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -394,7 +390,7 @@ const PendingApplicationsList = () => {
           onClose={() => setIsUpdateStatusDialogOpen(false)}
           interviewId={selectedInterviewIdToUpdate}
           currentStatus={selectedInterviewStatusToUpdate}
-          onUpdateInterviewStatus={handleUpdateInterviewStatus}
+          onUpdateInterviewStatus={(interviewId, newStatus) => handleUpdateInterviewStatus(interviewId, newStatus)}
         />
       )}
       <Dialog open={isInterviewModalOpen} onClose={() => setIsInterviewModalOpen(false)}>

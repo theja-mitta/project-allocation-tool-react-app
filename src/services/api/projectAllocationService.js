@@ -221,11 +221,30 @@ export class ProjectAllocationService {
       };
 
       static updateInterviewStatus = async (interviewId, newInterviewStatus, authToken) => {
-        try {
-            const response = await axios.patch(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/interviews/' + interviewId + '/status?newStatus=' + newInterviewStatus, { headers: {"Authorization" : `Bearer ${authToken}`} });
-            return response.status;
+        // try {
+        //     const response = await axios.patch(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/interviews/' + interviewId + '/status?newStatus=' + newInterviewStatus, { headers: {"Authorization" : `Bearer ${authToken}`} });
+        //     return response.status;
+        //   } catch (error) {
+        //     throw new Error('Unable to update the interview status');
+        //   }
+
+          try {
+            const response = await fetch(`${PROJECT_ALLOCATION_SERVICE_BASE_URL}/api/v1/interviews/${interviewId}/status?newStatus=${newInterviewStatus}`, {
+              method: 'PATCH',
+              headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json' // Make sure to set the content type
+              },
+            });
+        
+            if (response.ok) {
+              console.log('Interview status updated successfully');
+              // Refresh data or perform any other necessary actions
+            } else {
+              console.error('Failed to update interview status');
+            }
           } catch (error) {
-            throw new Error('Unable to update the interview status');
+            console.error('Error updating interview status:', error);
           }
       }
 

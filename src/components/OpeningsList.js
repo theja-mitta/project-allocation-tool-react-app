@@ -41,7 +41,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
   const [uniqueLocations, setUniqueLocations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null);
-  const [pageSize, setPageSize] = useState(3);
+  const [pageSize, setPageSize] = useState(4);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedOpeningId, setSelectedOpeningId] = useState(null);

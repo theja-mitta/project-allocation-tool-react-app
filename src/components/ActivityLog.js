@@ -32,7 +32,7 @@ const ActivityLog = () => {
   const [openUserDialog, setOpenUserDialog] = useState(false);
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage] = useState(5);
+  const [rowsPerPage] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {

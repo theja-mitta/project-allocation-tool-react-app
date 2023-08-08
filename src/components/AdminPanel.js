@@ -249,18 +249,18 @@ const AdminPanel = () => {
               >
                 {editingUser.role.toUpperCase() === 'ADMIN' ? (
                   [
-                    <MenuItem key="Recruiter" value="Recruiter">Recruiter</MenuItem>,
-                    <MenuItem key="Employee" value="Employee">Employee</MenuItem>
+                    <MenuItem key="Recruiter" value="Recruiter">RECRUITER</MenuItem>,
+                    <MenuItem key="Employee" value="Employee">EMPLOYEE</MenuItem>
                   ]
                 ) : editingUser.role.toUpperCase() === 'RECRUITER' ? (
                   [
-                    <MenuItem key="Admin" value="Admin">Admin</MenuItem>,
-                    <MenuItem key="Employee" value="Employee">Employee</MenuItem>
+                    <MenuItem key="Admin" value="Admin">ADMIN</MenuItem>,
+                    <MenuItem key="Employee" value="Employee">EMPLOYEE</MenuItem>
                   ]
                 ) : (
                   [
-                    <MenuItem key="Admin" value="Admin">Admin</MenuItem>,
-                    <MenuItem key="Recruiter" value="Recruiter">Recruiter</MenuItem>
+                    <MenuItem key="Admin" value="Admin">ADMIN</MenuItem>,
+                    <MenuItem key="Recruiter" value="Recruiter">RECRUITER</MenuItem>
                   ]
                 )}
               </Select>

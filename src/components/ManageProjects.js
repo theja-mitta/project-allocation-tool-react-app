@@ -35,7 +35,7 @@ const ManageProjects = () => {
   const [openAllocatedEmployeesDialog, setOpenAllocatedEmployeesDialog] = useState(false);
   const [allocatedEmployees, setAllocatedEmployees] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(2);
+  const [rowsPerPage, setRowsPerPage] = useState(4);
   const [totalElements, setTotalElements] = useState(null);
   const [newProjectTitle, setNewProjectTitle] = useState('');
   const [newProjectDetails, setNewProjectDetails] = useState('');
@@ -204,8 +204,8 @@ const ManageProjects = () => {
             </div>
         </TabPanel>
         <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-          <DialogTitle>Edit Project</DialogTitle>
-          <DialogContent>
+          <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Edit Project</DialogTitle>
+          <DialogContent dividers>
             {selectedProject && (
               <div style={{ maxWidth: '400px', margin: '0 auto' }}>
                 <TextField
@@ -240,8 +240,8 @@ const ManageProjects = () => {
           open={openAllocatedEmployeesDialog}
           onClose={handleCloseAllocatedEmployeesDialog}
         >
-          <DialogTitle>Allocated Employees</DialogTitle>
-          <DialogContent>
+          <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Allocated Employees</DialogTitle>
+          <DialogContent dividers>
             {allocatedEmployees.length > 0 && allocatedEmployees.map((employee) => (
               <DialogContentText key={employee.id}>
                 {employee.name} - {employee.email}
