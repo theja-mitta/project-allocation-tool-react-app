@@ -5,42 +5,43 @@ import { useSelector } from 'react-redux';
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
 
 const EditProfileDialog = ({ open, onClose }) => {
-    const authToken = useSelector(state => state.auth.authToken);
+  const authToken = useSelector(state => state.auth.authToken);
+  const user = useSelector(state => state.auth.user);
   const [userDetails, setUserDetails] = useState({
-    name: '',
-    email: '',
-    skills: [],
+      name: '',
+      email: '',
+      skills: [],
   });
   const [allSkills, setAllSkills] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
 
   useEffect(() => {
-    fetchUserDetails();
-    fetchAllSkills();
+      async function fetchData() {
+          await fetchAllSkills();
+          fetchUserDetails();
+      }
+      fetchData();
   }, []);
 
   const fetchUserDetails = async () => {
-    try {
-      const response = await AuthService.getUser(authToken);
-      setUserDetails(response);
-      // Map skill IDs to their corresponding titles
-      const selectedSkillTitles = response.skills.map((skillObj) => {
-        const matchingSkill = allSkills.find((skill) => skill.id === skillObj.id);
-        return matchingSkill ? matchingSkill.title : null;
-      });
-    setSelectedSkills(selectedSkillTitles);
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-    }
+      try {
+          const response = await AuthService.getUser(authToken);
+          setUserDetails(response);
+          console.log('res', response.skills.map(skill => skill.title));
+          setSelectedSkills(response.skills.map(skill => skill.title));
+      } catch (error) {
+          console.error('Error fetching user details:', error);
+      }
   };
 
   const fetchAllSkills = async () => {
-    try {
-      const response = await ProjectAllocationService.getSkills(authToken);
-      setAllSkills(response);
-    } catch (error) {
-      console.error('Error fetching skills:', error);
-    }
+      try {
+          const response = await ProjectAllocationService.getSkills(authToken);
+          console.log('fetchAllSkills', response);
+          setAllSkills(response);
+      } catch (error) {
+          console.error('Error fetching skills:', error);
+      }
   };
 
   const handleSkillChange = (event) => {
@@ -52,10 +53,16 @@ const EditProfileDialog = ({ open, onClose }) => {
   };
 
   const handleSave = async () => {
-    const updatedUserDetails = { ...userDetails, skills: selectedSkills };
+    const updatedSkills = selectedSkills.map(skillTitle => {
+      const matchingSkill = allSkills.find(skill => skill.title === skillTitle);
+      return matchingSkill ? matchingSkill : null;
+    });
+  
+    const updatedUserDetails = { ...userDetails, skills: updatedSkills };
+    console.log('updatedUserDetails', updatedUserDetails);
     try {
       // Make an API call to update user details
-      await AuthService.updateUserDetails(updatedUserDetails);
+      await AuthService.updateUserDetails(user.id, updatedUserDetails, authToken);
       onClose();
     } catch (error) {
       console.error('Error updating user details:', error);

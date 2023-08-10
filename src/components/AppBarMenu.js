@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Tabs, Tab, IconButton, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Tabs, Tab, IconButton, Menu, MenuItem, Snackbar, SnackbarContent } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
 import { AccountCircle } from '@mui/icons-material';
 import { AuthService } from '../services/api/auth';
 import { useSelector, useDispatch } from 'react-redux';
 import { setStateToInitialState } from '../store/reducers/authReducer';
-import theme from '../utils/theme';
 import EditProfileDialog from './EditProfileDialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,6 +23,10 @@ const AppBarMenu = ({ menuOptions, value, onChange }) => {
   const dispatch = useDispatch();
   const authToken = useSelector((state) => state.auth.authToken);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarColor, setSnackbarColor] = useState("red"); // Default color for errors
+
 
   // State variables for the dialog
   const [isEditProfileDialogOpen, setIsEditProfileDialogOpen] = useState(false);
@@ -40,8 +43,21 @@ const AppBarMenu = ({ menuOptions, value, onChange }) => {
     AuthService.logout(authToken);
     dispatch(setStateToInitialState());
     handleMenuClose();
-    navigate('/login');
+
+    // Show success Snackbar
+    showSnackbar("Logged out successfully.", "green");
+
+    setTimeout(() => {
+      navigate('/login');
+    }, 500);
   };
+  
+
+  const showSnackbar = (message, color) => {
+    setSnackbarMessage(message);
+    setSnackbarColor(color);
+    setSnackbarOpen(true);
+  };  
 
   // Function to open the Edit Profile dialog
   const handleEditProfileClick = () => {
@@ -94,6 +110,22 @@ const AppBarMenu = ({ menuOptions, value, onChange }) => {
           onClose={() => setIsEditProfileDialogOpen(false)} // Close the dialog
         />
       </Toolbar>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <SnackbarContent
+          message={snackbarMessage}
+          onClose={() => setSnackbarOpen(false)}
+          sx={{ backgroundColor: snackbarColor }} // Set background color based on snackbarColor
+        />
+      </Snackbar>
+
     </AppBar>
   );
 };

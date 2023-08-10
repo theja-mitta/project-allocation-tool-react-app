@@ -12,6 +12,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Snackbar,
+  SnackbarContent
 } from '@mui/material';
 import { ProjectAllocationService } from "../services/api/projectAllocationService";
 import { AuthService } from '../services/api/auth';
@@ -22,6 +24,16 @@ const ScheduleInterviewModal = ({ applicationId, onClose, onInterviewScheduled }
   const [scheduledTime, setScheduledTime] = useState('');
   const [interviewers, setInterviewers] = useState([]);
   const [selectedInterviewer, setSelectedInterviewer] = useState('');
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  const showSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
 
   useEffect(() => {
     // Fetch the list of users to populate the interviewers dropdown
@@ -49,18 +61,30 @@ const ScheduleInterviewModal = ({ applicationId, onClose, onInterviewScheduled }
         id: selectedInterviewer,
       },
     };
-
+  
     ProjectAllocationService.scheduleInterview(applicationId, interviewData, authToken)
       .then((response) => {
         console.log(response);
-        // Interview scheduled successfully, close the modal and trigger the callback
-        onClose();
-        onInterviewScheduled();
+        // Show success message based on the response (adjust this according to your API's response structure)
+        showSnackbar(response.message || 'Interview scheduled successfully', 'success');
+        setTimeout(() => {
+          // Interview scheduled successfully, close the modal and trigger the callback
+          onClose();
+          onInterviewScheduled();
+        }, 500);
       })
       .catch((error) => {
         console.error('Error scheduling interview:', error);
+        if (error.response && error.response.data && error.response.data.message) {
+          // Show error message from API response
+          showSnackbar(error.response.data.message, 'error');
+        } else {
+          // Show a generic error message if no specific error message is available
+          showSnackbar('Error scheduling interview. Please try again.', 'error');
+        }
       });
   };
+  
 
   return (
     <Dialog open={true} onClose={onClose}>
@@ -106,6 +130,23 @@ const ScheduleInterviewModal = ({ applicationId, onClose, onInterviewScheduled }
           Schedule
         </Button>
       </DialogActions>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000} // Adjust the duration as needed
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <SnackbarContent
+          style={{
+            backgroundColor:
+              snackbarSeverity === 'success' ? '#43a047' : '#d32f2f',
+          }}
+          message={<span>{snackbarMessage}</span>}
+        />
+      </Snackbar>
     </Dialog>
   );
 };

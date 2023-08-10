@@ -8,20 +8,29 @@ import {
   Paper,
   Typography,
   Box,
+  Snackbar,
+  SnackbarContent,
 } from "@mui/material";
 import { AuthService } from "../services/api/auth";
-import { setAuthTokenAndFetchUserPermissions, setStateToInitialState } from "../store/reducers/authReducer";
+import {
+  setAuthTokenAndFetchUserPermissions,
+  setStateToInitialState,
+} from "../store/reducers/authReducer";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userRole = useSelector((state) => state.auth.userRole); 
+  const userRole = useSelector((state) => state.auth.userRole);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [loginError, setLoginError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  
+  // State to manage Snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   // useEffect hook to dispatch the resetState action when the component mounts
   useEffect(() => {
@@ -45,15 +54,32 @@ const LoginForm = () => {
       const authToken = await AuthService.login(email, password);
       if (authToken) {
         dispatch(setAuthTokenAndFetchUserPermissions(authToken));
-        navigate("/dashboard");
+        // Show success Snackbar
+        showSnackbar("Login successful!");
+
+        // Navigate after a short delay to give time for the Snackbar to be seen
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000); 
       } else {
         setLoginError(true);
         setErrorMessage("Invalid credentials. Please try again.");
+        showSnackbar("Invalid credentials. Please try again.");
       }
     } catch (error) {
       setLoginError(true);
       setErrorMessage("Invalid credentials. Please try again.");
+      showSnackbar("Invalid credentials. Please try again.");
     }
+  };
+
+  const showSnackbar = (message) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const handleEmailChange = (e) => {
@@ -155,6 +181,26 @@ const LoginForm = () => {
           </Typography>
         </Box>
       </Paper>
+      {/* Snackbar component */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <SnackbarContent
+          message={snackbarMessage}
+          onClose={handleSnackbarClose}
+          sx={
+            loginError
+              ? { backgroundColor: "red" } // Red background for login errors
+              : { backgroundColor: "green" } // Green background for successful login
+          }
+        />
+      </Snackbar>
     </Container>
   );
 };

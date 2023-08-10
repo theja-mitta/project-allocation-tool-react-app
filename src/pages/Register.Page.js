@@ -13,7 +13,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Paper
+  Paper,
+  Snackbar, 
+  SnackbarContent
 } from '@mui/material';
 import { LockOutlined } from '@mui/icons-material';
 import { AuthService } from '../services/api/auth';
@@ -38,6 +40,10 @@ export const Register = () => {
   const [signUpError, setSignUpError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarColor, setSnackbarColor] = useState("red"); // Default color for errors
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
@@ -61,14 +67,25 @@ export const Register = () => {
           formData.role
         );
         if (authToken) {
-          navigate('/login');
+          showSnackbar("Registration successful!", "green");
+
+          setTimeout(() => {
+            navigate("/login");
+          }, 800); 
         }
       } catch (error) {
         setSignUpError(true);
-        setErrorMessage('Request is invalid. Please try again.');
+        setErrorMessage("Request is invalid. Please try again.");
+        showSnackbar("Request is invalid. Please try again.", "red"); // Show error Snackbar
       }
     }
-  };
+  };  
+
+  const showSnackbar = (message, color) => {
+    setSnackbarMessage(message);
+    setSnackbarColor(color);
+    setSnackbarOpen(true);
+  };  
 
   const validateForm = () => {
     let valid = true;
@@ -268,6 +285,21 @@ export const Register = () => {
               </Box>
             </Box>
             </Paper>
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={5000}
+              onClose={() => setSnackbarOpen(false)}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <SnackbarContent
+                message={snackbarMessage}
+                onClose={() => setSnackbarOpen(false)}
+                sx={{ backgroundColor: snackbarColor }} // Set background color based on snackbarColor
+              />
+            </Snackbar>
           </Container>
     </div>
   );

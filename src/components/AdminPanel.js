@@ -22,7 +22,9 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  Tooltip
+  Tooltip,
+  Snackbar, 
+  SnackbarContent
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -43,6 +45,10 @@ const AdminPanel = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarColor, setSnackbarColor] = useState('green'); // Default color for success
 
 
   useEffect(() => {
@@ -106,6 +112,20 @@ const AdminPanel = () => {
     setOpenDialog(true);
   };
 
+  const showSnackbar = (message, color) => {
+    setSnackbarMessage(message);
+    setSnackbarColor(color);
+    setSnackbarOpen(true);
+  };
+  
+  const showSuccessSnackbar = (message) => {
+    showSnackbar(message, 'green');
+  };
+  
+  const showErrorSnackbar = (message) => {
+    showSnackbar(message, 'red');
+  };  
+
   const handleUpdateUser = async () => {
     try {
       const updatedUser = {
@@ -119,8 +139,10 @@ const AdminPanel = () => {
       await AuthService.updateUser(authToken, editingUser.id, updatedUser);
       fetchUsers();
       handleCloseDialog();
+      showSuccessSnackbar('User updated successfully.');
     } catch (error) {
       console.error('Error updating user:', error);
+      showErrorSnackbar('Error updating user.');
     }
   };
 
@@ -128,8 +150,10 @@ const AdminPanel = () => {
     try {
       await AuthService.deleteUser(authToken, userId);
       fetchUsers();
+      showSuccessSnackbar('User deleted successfully.');
     } catch (error) {
       console.error('Error deleting user:', error);
+      showErrorSnackbar('Error deleting user.');
     }
   };
 
@@ -289,6 +313,21 @@ const AdminPanel = () => {
           sx={{ margin: '16px' }} // Add some margin around the pagination
         />
       </div>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <SnackbarContent
+          message={snackbarMessage}
+          onClose={() => setSnackbarOpen(false)}
+          sx={{ backgroundColor: snackbarColor }} // Set background color based on snackbarColor
+        />
+      </Snackbar>
     </Container>
   );
 };

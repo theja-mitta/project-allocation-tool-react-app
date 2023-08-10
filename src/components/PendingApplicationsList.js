@@ -21,7 +21,9 @@ import {
   Select,
   MenuItem,
   Pagination,
-  Tooltip
+  Tooltip,
+  Snackbar,
+  SnackbarContent,
 } from '@mui/material';
 import { ProjectAllocationService } from "../services/api/projectAllocationService";
 import CandidateDetails from './CandidateDetails';
@@ -29,7 +31,7 @@ import ScheduleInterviewModal from './ScheduleInterviewModal';
 import { useSelector } from 'react-redux';
 
 
-const UpdateInterviewStatusDialog = ({ open, onClose, interviewId, currentStatus, onUpdateInterviewStatus }) => {
+const UpdateInterviewStatusDialog = ({ open, onClose, interviewId, currentStatus, onUpdateInterviewStatus, updatedInterviewsMap }) => {
   const [newStatus, setNewStatus] = useState(currentStatus);
   const [interviewUpdated, setInterviewUpdated] = useState(false);
 
@@ -59,7 +61,7 @@ const UpdateInterviewStatusDialog = ({ open, onClose, interviewId, currentStatus
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleUpdateStatus} color="primary" disabled={interviewUpdated}>
+        <Button onClick={handleUpdateStatus} color="primary" disabled={updatedInterviewsMap[interviewId]}>
           Update
         </Button>
       </DialogActions>
@@ -85,10 +87,20 @@ const PendingApplicationsList = () => {
   const [rowsPerPage, setRowsPerPage] = useState(2);
   const [totalPages, setTotalPages] = useState(null);
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
   const handleUpdateInterview = (interviewId, currentStatus) => {
     setSelectedInterviewIdToUpdate(interviewId);
     setSelectedInterviewStatusToUpdate(currentStatus);
     setIsUpdateStatusDialogOpen(true);
+  };
+
+  const showSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
   };
 
   const handleUpdateInterviewStatus = (interviewId, newStatus) => {
@@ -98,12 +110,21 @@ const PendingApplicationsList = () => {
           ...prevMap,
           [interviewId]: newStatus,
         }));
-        console.log('Interview status updated successfully');
+        const successMessage = 'Interview status updated successfully';
+        showSnackbar(successMessage, 'success');
       })
       .catch((error) => {
         console.error('Error updating interview status:', error);
+        let errorMessage = 'An error occurred while updating interview status';
+        
+        if (error.response && error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+        
+        showSnackbar(errorMessage, 'error');
       });
   };
+  
 
   const fetchData = async () => {
     try {
@@ -169,38 +190,49 @@ const PendingApplicationsList = () => {
     setIsInterviewModalOpen(true);
   };
 
-  const handleAllocateApplicant = (applicationId) => {
-    console.log('AllocateApplicant', applicationId);
-    ProjectAllocationService.handleAllocateApplicant(applicationId, authToken)
-      .then(() => {
-        // Update the application status to ALLOCATED in the frontend
+  const handleAllocateApplicant = async (applicationId) => {
+    try {
+      const allocationSuccessful = await ProjectAllocationService.handleAllocateApplicant(applicationId, authToken);
+  
+      if (allocationSuccessful) {
+        // Application allocated successfully
         setPendingApplications((prevApplications) =>
           prevApplications.map((app) =>
             app.id === applicationId ? { ...app, status: "ALLOCATED" } : app
           )
         );
-        console.log('Applicant allocated successfully');
-      })
-      .catch((error) => {
-        console.error('Error allocating applicant:', error);
-      });
+        showSnackbar('Applicant allocated successfully', 'success');
+      } else {
+        // Handle error response
+        const errorMessage = allocationSuccessful.statusText || 'Failed to allocate applicant. Please try again.';
+        showSnackbar(errorMessage, 'error');
+      }
+    } catch (error) {
+      console.error('Error allocating applicant:', error);
+  
+      // Check if the error object has a message field
+      const errorMessage = error.response.data || 'Error accepting applicantion. Please try again.';
+      showSnackbar(errorMessage, 'error');
+    }
   };
 
-  const handleRejectApplication = (applicationId) => {
-    console.log('RejectApplicant', applicationId);
-    ProjectAllocationService.handleRejectApplicant(applicationId, authToken)
-      .then(() => {
-        // Update the application status to REJECTED in the frontend
-        setPendingApplications((prevApplications) =>
-          prevApplications.map((app) =>
-            app.id === applicationId ? { ...app, status: "REJECTED" } : app
-          )
-        );
-        console.log('Applicant rejected successfully');
-      })
-      .catch((error) => {
-        console.error('Error rejecting applicant:', error);
-      });
+  const handleRejectApplication = async (applicationId) => {
+    try {
+      await ProjectAllocationService.handleRejectApplicant(applicationId, authToken);
+      
+      // Update the application status to REJECTED in the frontend
+      setPendingApplications((prevApplications) =>
+        prevApplications.map((app) =>
+          app.id === applicationId ? { ...app, status: "REJECTED" } : app
+        )
+      );
+      
+      showSnackbar('Applicantion rejected successfully', 'success'); // Show success Snackbar
+    } catch (error) {  
+      // Check if the error object has a message field
+      const errorMessage = error.response.data || 'Error rejecting applicantion. Please try again.';
+      showSnackbar(errorMessage, 'error');
+    }
   };
   
 
@@ -391,6 +423,7 @@ const PendingApplicationsList = () => {
           interviewId={selectedInterviewIdToUpdate}
           currentStatus={selectedInterviewStatusToUpdate}
           onUpdateInterviewStatus={(interviewId, newStatus) => handleUpdateInterviewStatus(interviewId, newStatus)}
+          updatedInterviewsMap={updatedInterviewsMap}
         />
       )}
       <Dialog open={isInterviewModalOpen} onClose={() => setIsInterviewModalOpen(false)}>
@@ -422,6 +455,23 @@ const PendingApplicationsList = () => {
           </>
         )}
       </Dialog>
+      <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={4000} // Adjust the duration as needed
+            onClose={() => setSnackbarOpen(false)}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <SnackbarContent
+              style={{
+                backgroundColor:
+                  snackbarSeverity === 'success' ? '#43a047' : '#d32f2f',
+              }}
+              message={<span>{snackbarMessage}</span>}
+            />
+          </Snackbar>
     </Grid>
   );
 };

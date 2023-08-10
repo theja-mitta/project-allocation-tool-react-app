@@ -11,6 +11,8 @@ import {
   Box,
   Container,
   Typography,
+  Snackbar,
+  SnackbarContent
 } from '@mui/material';
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
 
@@ -40,6 +42,22 @@ const OpeningForm = () => {
       const [errors, setErrors] = useState(initialErrors);
       const loggedinUser = useSelector((state) => state.auth.user);
       const authToken = useSelector(state => state.auth.authToken);
+
+      const [snackbarOpen, setSnackbarOpen] = useState(false);
+      const [snackbarMessage, setSnackbarMessage] = useState('');
+      const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+      const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+        setSnackbarMessage('');
+        setSnackbarSeverity('success');
+      };
+
+      const showSnackbar = (message, severity) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+      };
 
   useEffect(() => {
 
@@ -174,35 +192,43 @@ const OpeningForm = () => {
 
   const handleSubmit = async () => {
     try {
-      const projectId = formData.project; // Get the selected project ID
-      const payload = {
-        title: formData.title,
-        details: formData.details,
-        level: formData.level,
-        location: formData.location,
-        skills: formData.skills.map((skillId) => ({ id: skillId })),
-        recruiter: {
-          id: loggedinUser.id,
-        },
-      };
+        const projectId = formData.project; // Get the selected project ID
+        const payload = {
+            title: formData.title,
+            details: formData.details,
+            level: formData.level,
+            location: formData.location,
+            skills: formData.skills.map((skillId) => ({ id: skillId })),
+            recruiter: {
+                id: loggedinUser.id,
+            },
+        };
 
-      const isValid = validateForm();
+        const isValid = validateForm();
 
-      if (isValid) {
-        const response = await ProjectAllocationService.createOpening(
-          projectId,
-          payload,
-          authToken
-        );
-        console.log('Opening created:', response.data);
-        setSuccessMessage('Opening created successfully!');
-        setFormData(initialState);
-      }
+        if (isValid) {
+            const response = await ProjectAllocationService.createOpening(
+                projectId,
+                payload,
+                authToken
+            );
+            console.log('Opening created:', response);
+            showSnackbar('Opening created successfully!', 'success');
+            setSuccessMessage('Opening created successfully!');
+            setFormData(initialState);
+        }
     } catch (error) {
-      console.error('Error creating opening:', error);
-      // Handle error, e.g., show an error message
+        console.error('Error creating opening:', error);
+
+        if (error.message) {
+            // Show the specific error message from the API
+            showSnackbar(error.message, "red");
+        } else {
+            // If no specific message, show a general error message
+            showSnackbar("An error occurred. Please try again.", "red");
+        }
     }
-  };
+};
 
   return (
     <Container
@@ -358,6 +384,23 @@ const OpeningForm = () => {
           </Typography>
         )}
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000} // Adjust the duration as needed
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <SnackbarContent
+          style={{
+            backgroundColor:
+              snackbarSeverity === 'success' ? '#43a047' : '#d32f2f',
+          }}
+          message={<span>{snackbarMessage}</span>}
+        />
+      </Snackbar>
     </Container>
   );
 };

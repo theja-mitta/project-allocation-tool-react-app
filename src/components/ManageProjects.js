@@ -242,11 +242,14 @@ const ManageProjects = () => {
         >
           <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Allocated Employees</DialogTitle>
           <DialogContent dividers>
-            {allocatedEmployees.length > 0 && allocatedEmployees.map((employee) => (
+            {allocatedEmployees.length > 0 ? allocatedEmployees.map((employee) => (
               <DialogContentText key={employee.id}>
                 {employee.name} - {employee.email}
               </DialogContentText>
-            ))}
+            )) : (
+              <DialogContentText>
+              No candidates allocated yet.
+            </DialogContentText>)}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseAllocatedEmployeesDialog}>Close</Button>

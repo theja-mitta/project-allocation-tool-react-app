@@ -70,6 +70,24 @@ const ApplicationDetails = ({ openingId, loggedinUser, onClose }) => {
     marginBottom: '8px',
   };
 
+  // Determine whether to show the "Interviews scheduled" information as plain text or a link
+  const interviewsScheduledContent = applicationData.interviews.length > 0 ? (
+    <Tooltip title="View interview details">
+      <Typography
+        style={{
+          ...valueStyle,
+          display: 'inline-block',
+          textDecoration: 'underline',
+        }}
+        onClick={handleInterviewDialogOpen}
+      >
+        {applicationData.interviews.length}
+      </Typography>
+    </Tooltip>
+  ) : (
+    <Typography style={valueStyle}>No interviews scheduled</Typography>
+  );
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
@@ -101,7 +119,8 @@ const ApplicationDetails = ({ openingId, loggedinUser, onClose }) => {
           {new Date(applicationData.appliedAt).toLocaleString()}
         </Typography>
         <Typography style={labelStyle}>Interviews scheduled:</Typography>
-        <Tooltip title="View interview details">
+        {interviewsScheduledContent}
+        {/* <Tooltip title="View interview details">
           <Typography
             style={{
               ...valueStyle,
@@ -112,7 +131,7 @@ const ApplicationDetails = ({ openingId, loggedinUser, onClose }) => {
           >
             {applicationData.interviews.length}
           </Typography>
-        </Tooltip>
+        </Tooltip> */}
         {/* Add more application details here if needed */}
       </Grid>
       <Dialog open={projectDialogOpen} onClose={handleDialogClose}>
@@ -146,6 +165,7 @@ const ApplicationDetails = ({ openingId, loggedinUser, onClose }) => {
                   <TableCell style={{ fontWeight: 'bold', textAlign: 'center' }}>Interview Date</TableCell>
                   <TableCell style={{ fontWeight: 'bold', textAlign: 'center' }}>Interviewer Name</TableCell>
                   <TableCell style={{ fontWeight: 'bold', textAlign: 'center' }}>Interviewer Email</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', textAlign: 'center' }}>Interview Status</TableCell>
                   {/* Add more table header cells here */}
                 </TableRow>
               </TableHead>
@@ -155,6 +175,7 @@ const ApplicationDetails = ({ openingId, loggedinUser, onClose }) => {
                     <TableCell align='center'>{new Date(interview.scheduledTime).toLocaleString()}</TableCell>
                     <TableCell align='center'>{interview.interviewer.name}</TableCell>
                     <TableCell align='center'>{interview.interviewer.email}</TableCell>
+                    <TableCell align='center'>{interview.status}</TableCell>
                     {/* Add more table cells for interview details */}
                   </TableRow>
                 ))}

@@ -23,7 +23,9 @@ import {
   TextField,
   Link,
   Pagination,
-  Tooltip
+  Tooltip,
+  Snackbar, 
+  SnackbarContent
 } from '@mui/material';
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
 import ApplicationDetails from './ApplicationDetails';
@@ -45,8 +47,14 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedOpeningId, setSelectedOpeningId] = useState(null);
+  const [lastAppliedOpeningId, setLastAppliedOpeningId] = useState(null);
 
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarColor, setSnackbarColor] = useState("red"); // Default color for errors
+
 
   const applyToOpening = async (openingId, userId) => {
     try {
@@ -58,17 +66,38 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
       // Update the appliedOpenings state
       setAppliedOpenings((prevAppliedOpenings) => new Set(prevAppliedOpenings).add(openingId));
 
-      // Update the filteredOpenings state
-      setFilteredOpenings((prevFilteredOpenings) =>
-        prevFilteredOpenings.map((opening) =>
-          opening.id === openingId ? { ...opening, applied: true } : opening
-        )
-      );
+      // // Update the filteredOpenings state
+      // setFilteredOpenings((prevFilteredOpenings) =>
+      //   prevFilteredOpenings.map((opening) =>
+      //     opening.id === openingId ? { ...opening, applied: true } : opening
+      //   )
+      // );
+
+      // Set the last applied opening ID
+      setLastAppliedOpeningId(openingId);
+
+      // Show success Snackbar
+      showSnackbar("Successfully applied for the opening.", "green");
     } catch (error) {
       // Handle the error if the API call fails
-      console.log(error);
+      console.log('errorclient', error);
+
+      if (error) {
+        // Show the specific error message from the API
+        showSnackbar(`${error}`, "red");
+      } else {
+        // If the error doesn't have a response (network error, etc.)
+        showSnackbar("Network error. Please try again later.", "red");
+      }
     }
   };
+
+  const showSnackbar = (message, color) => {
+    setSnackbarMessage(message);
+    setSnackbarColor(color);
+    setSnackbarOpen(true);
+  };
+  
 
   // Function to handle click of "View application details" link
   const handleViewApplicationDetails = (openingId) => {
@@ -108,7 +137,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
     };
   
     fetchData();
-  }, [loggedinUser, showApplied, userType, pageSize, currentPage]);
+  }, [loggedinUser, showApplied, userType, pageSize, currentPage, lastAppliedOpeningId]);
   
 
   useEffect(() => {
@@ -171,19 +200,46 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
   const handleApplyOpening = async openingId => {
     if (!appliedOpenings.has(openingId)) {
       await applyToOpening(openingId, loggedinUser.id);
-
+      
       if (userType === 'recruiter' || userType === 'admin') {
         setFilteredOpenings(openings.filter(opening => opening.recruiter.id === loggedinUser.id));
       }
     }
   };
 
-  // Function to save the edited opening data with an API call
+  // // Function to save the edited opening data with an API call
+  // const saveUpdatedOpening = async (updatedOpening) => {
+  //   try {
+  //     // Create an array of skill IDs from the updatedOpening.skills array
+  //     const skillIds = updatedOpening.skills.map((skill) => ({ id: skill.id }));
+
+  //     // Create the final payload with skill IDs and other opening properties
+  //     const payload = {
+  //       title: updatedOpening.title,
+  //       details: updatedOpening.details,
+  //       level: updatedOpening.level,
+  //       location: updatedOpening.location,
+  //       skills: skillIds,
+  //       status: updatedOpening.status
+  //     };
+
+  //     // Make the API call with the payload
+  //     const response = await ProjectAllocationService.updateOpening(updatedOpening.id, payload, authToken);
+  //     // Process the response if needed
+  //     console.log(response);
+
+  //     console.log('Opening data updated successfully:', updatedOpening);
+  //   } catch (error) {
+  //     // Handle error if the API call fails
+  //     console.error('Error updating opening data:', error);
+  //   }
+  // };
+
   const saveUpdatedOpening = async (updatedOpening) => {
     try {
       // Create an array of skill IDs from the updatedOpening.skills array
       const skillIds = updatedOpening.skills.map((skill) => ({ id: skill.id }));
-
+  
       // Create the final payload with skill IDs and other opening properties
       const payload = {
         title: updatedOpening.title,
@@ -193,16 +249,25 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
         skills: skillIds,
         status: updatedOpening.status
       };
-
+  
       // Make the API call with the payload
       const response = await ProjectAllocationService.updateOpening(updatedOpening.id, payload, authToken);
       // Process the response if needed
       console.log(response);
-
+  
+      // Show success snackbar
+      showSnackbar('Opening data updated successfully', 'green');
       console.log('Opening data updated successfully:', updatedOpening);
     } catch (error) {
       // Handle error if the API call fails
       console.error('Error updating opening data:', error);
+      
+      // Show error snackbar with the error message from the API response
+      if (error.response && error.response.data && error.response.data.message) {
+        showSnackbar(error.response.data.message, 'red');
+      } else {
+        showSnackbar('An error occurred while updating opening data. Please try again.', 'red');
+      }
     }
   };
 
@@ -302,6 +367,15 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
 
   // JSX for rendering opening rows
   const renderOpeningRows = (openings) => {
+    if (openings.length === 0) {
+      return (
+        <TableRow>
+          <TableCell colSpan={6} align="center">
+            {showApplied ? "There are no applied opportunities to show" : "There are no project opportunities to show"}
+          </TableCell>
+        </TableRow>
+      );
+    }
     return openings.map((opening) => (
       <TableRow key={opening.id}>
         <TableCell align="center">{opening.title}</TableCell>
@@ -532,6 +606,21 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
             shape="rounded"
           />
         </div>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={5000}
+          onClose={() => setSnackbarOpen(false)}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <SnackbarContent
+            message={snackbarMessage}
+            onClose={() => setSnackbarOpen(false)}
+            sx={{ backgroundColor: snackbarColor }} // Set background color based on snackbarColor
+          />
+        </Snackbar>
     </Grid>
     <Dialog open={isApplicationModalOpen} onClose={() => setIsApplicationModalOpen(false)}>
       <DialogTitle style={{ backgroundColor: '#2196F3', color: 'white' }}>Application Details</DialogTitle>

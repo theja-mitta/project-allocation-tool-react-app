@@ -17,6 +17,27 @@ export class AuthService {
         }
     };
 
+    static updateUserDetails = async (userId, updatedUserDetails, authToken) => {
+        try {
+          const response = await fetch(`${USER_SERVICE_BASE_URL}/api/v1/users/${userId}`, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+              'Content-Type': 'application/json', // Make sure to set the content type
+            },
+            body: JSON.stringify(updatedUserDetails), // Include the updated user details in the request body
+          });
+      
+          if (response.ok) {
+            console.log('User details updated successfully');
+          } else {
+            console.error('Failed to update user details');
+          }
+        } catch (error) {
+          console.error('Error updating user details:', error);
+        }
+      };      
+
     static getUserPermissions = async (tokenStr) => {
 
         try {
@@ -80,7 +101,7 @@ export class AuthService {
 
     static updateUser = async (tokenStr, userId, updatedUser) => {
         try {
-            const response = await axios.patch(`${USER_SERVICE_BASE_URL}/api/v1/users/${userId}`, updatedUser, { headers: {"Authorization" : `Bearer ${tokenStr}`} });
+            const response = await axios.patch(`${USER_SERVICE_BASE_URL}/api/v1/users/${userId}/admin`, updatedUser, { headers: {"Authorization" : `Bearer ${tokenStr}`} });
             return response.data;
         } catch (error) {
             throw new Error('Invalid request. Please try again.');
