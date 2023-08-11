@@ -75,7 +75,18 @@ export class AuthService {
             const response = await axios.post(`${USER_SERVICE_BASE_URL}/api/v1/auth/register`, requestBody);
             return response.data;
         } catch (error) {
-            throw new Error('Invalid credentials. Please try again.');
+            console.log('error', error);
+            if (error.response) {
+                // Server responded with an error
+                const errorMessage = error.response.data;
+                throw new Error(errorMessage);
+            } else if (error.request) {
+                // The request was made but no response was received
+                throw new Error('No response from the server. Please try again later.');
+            } else {
+                // Something happened in setting up the request that triggered an error
+                throw new Error('An error occurred while processing your request. Please try again.');
+            }
         }
     };
 

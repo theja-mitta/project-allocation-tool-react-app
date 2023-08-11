@@ -45,6 +45,7 @@ const AdminPanel = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const roleEnumValues = ["EMPLOYEE", "RECRUITER", "ADMIN"];
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -64,7 +65,6 @@ const AdminPanel = () => {
       console.error('Error fetching users:', error);
     }
   };
-  
 
   useEffect(() => {
     fetchUsers();
@@ -271,22 +271,11 @@ const AdminPanel = () => {
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
-                {editingUser.role.toUpperCase() === 'ADMIN' ? (
-                  [
-                    <MenuItem key="Recruiter" value="Recruiter">RECRUITER</MenuItem>,
-                    <MenuItem key="Employee" value="Employee">EMPLOYEE</MenuItem>
-                  ]
-                ) : editingUser.role.toUpperCase() === 'RECRUITER' ? (
-                  [
-                    <MenuItem key="Admin" value="Admin">ADMIN</MenuItem>,
-                    <MenuItem key="Employee" value="Employee">EMPLOYEE</MenuItem>
-                  ]
-                ) : (
-                  [
-                    <MenuItem key="Admin" value="Admin">ADMIN</MenuItem>,
-                    <MenuItem key="Recruiter" value="Recruiter">RECRUITER</MenuItem>
-                  ]
-                )}
+                {roleEnumValues.map((availableRole) => (
+                  <MenuItem key={availableRole} value={availableRole}>
+                    {availableRole}
+                  </MenuItem>
+                ))}
               </Select>
           </FormControl>
           </DialogContent>

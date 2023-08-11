@@ -59,27 +59,27 @@ export const Register = () => {
   const handleSignUp = async (event) => {
     event.preventDefault();
     if (validateForm()) {
-      try {
-        const authToken = await AuthService.register(
-          formData.name,
-          formData.email,
-          formData.password,
-          formData.role
-        );
-        if (authToken) {
-          showSnackbar("Registration successful!", "green");
+        try {
+            const authToken = await AuthService.register(
+                formData.name,
+                formData.email,
+                formData.password,
+                formData.role
+            );
+            if (authToken) {
+                showSnackbar("Registration successful!", "green");
 
-          setTimeout(() => {
-            navigate("/login");
-          }, 800); 
+                setTimeout(() => {
+                    navigate("/login");
+                }, 800);
+            }
+        } catch (error) {
+            setSignUpError(true);
+            setErrorMessage(error.message); 
+            showSnackbar(error.message, "red"); 
         }
-      } catch (error) {
-        setSignUpError(true);
-        setErrorMessage("Request is invalid. Please try again.");
-        showSnackbar("Request is invalid. Please try again.", "red"); // Show error Snackbar
-      }
     }
-  };  
+  }; 
 
   const showSnackbar = (message, color) => {
     setSnackbarMessage(message);

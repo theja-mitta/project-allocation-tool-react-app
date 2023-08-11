@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem, Snackbar, SnackbarContent } from '@mui/material';
 import { AuthService } from '../services/api/auth';
 import { useSelector } from 'react-redux';
 import { ProjectAllocationService } from '../services/api/projectAllocationService';
@@ -14,6 +14,11 @@ const EditProfileDialog = ({ open, onClose }) => {
   });
   const [allSkills, setAllSkills] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
+
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   useEffect(() => {
       async function fetchData() {
@@ -63,10 +68,24 @@ const EditProfileDialog = ({ open, onClose }) => {
     try {
       // Make an API call to update user details
       await AuthService.updateUserDetails(user.id, updatedUserDetails, authToken);
-      onClose();
+      showSnackbar('User details updated successfully', 'success');
+      setTimeout(() => {
+        onClose();
+      }, 500);
     } catch (error) {
       console.error('Error updating user details:', error);
+      showSnackbar('Error updating user details', 'error');
     }
+  };
+
+  const showSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const closeSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -75,18 +94,6 @@ const EditProfileDialog = ({ open, onClose }) => {
       <DialogContent dividers>
         <TextField label="Name" value={userDetails.name} fullWidth margin="normal"/>
         <TextField label="Email" value={userDetails.email} fullWidth margin="normal"/>
-        {/* <TextField
-          label="Skills"
-          fullWidth
-          margin="normal"
-          select
-          SelectProps={{
-            multiple: true,
-            // Add other props as needed
-          }}
-          value={userDetails.skills}
-          // Add onChange handler for skills
-        /> */}
         <FormControl fullWidth margin='normal'>
           <InputLabel>Update Skills</InputLabel>
           <Select
@@ -108,6 +115,22 @@ const EditProfileDialog = ({ open, onClose }) => {
         <Button onClick={handleCancel}>Cancel</Button>
         <Button onClick={handleSave} color="primary">Save</Button>
       </DialogActions>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={closeSnackbar}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <SnackbarContent
+          style={{
+            backgroundColor: snackbarSeverity === 'success' ? '#43a047' : '#d32f2f',
+          }}
+          message={<span>{snackbarMessage}</span>}
+        />
+      </Snackbar>
     </Dialog>
   );
 };

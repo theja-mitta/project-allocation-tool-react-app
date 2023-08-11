@@ -31,7 +31,7 @@
     'MANAGE_USERS': { label: 'Manage Users', component: AdminPanel },
     'CREATE_OPENING': { label: 'Create Opening', component: OpeningForm },
     'VIEW_REPORTS': { label: 'View Reports', component: CandidateAllocationDashboard },
-    'VIEW_USER_ACTIVITY': { label: 'User Activity', component: ActivityLog },
+    'VIEW_USER_ACTIVITY': { label: 'Activity Log', component: ActivityLog },
     'CREATE_PROJECT': { label: 'Manage Projects', component: ManageProjects }
     // ... and so on
   };

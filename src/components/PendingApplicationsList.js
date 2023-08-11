@@ -35,6 +35,13 @@ const UpdateInterviewStatusDialog = ({ open, onClose, interviewId, currentStatus
   const [newStatus, setNewStatus] = useState(currentStatus);
   const [interviewUpdated, setInterviewUpdated] = useState(false);
 
+  useEffect(() => {
+    // Reset the newStatus state when the dialog is opened
+    if (open) {
+      setNewStatus(currentStatus);
+    }
+  }, [open, currentStatus]);
+
   const handleUpdateStatus = () => {
     onUpdateInterviewStatus(interviewId, newStatus);
     setInterviewUpdated(true);
@@ -53,6 +60,7 @@ const UpdateInterviewStatusDialog = ({ open, onClose, interviewId, currentStatus
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
             >
+              <MenuItem value="SCHEDULED">SCHEDULED</MenuItem>
               <MenuItem value="COMPLETED">COMPLETED</MenuItem>
               <MenuItem value="CANCELLED">CANCELLED</MenuItem>
             </Select>
