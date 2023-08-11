@@ -3,7 +3,7 @@ import {
   Typography,
   AppBar,
   Toolbar,
-  Container,
+  Grid,
   Table,
   TableBody,
   TableCell,
@@ -170,7 +170,7 @@ const AdminPanel = () => {
   };
 
   return (
-    <Container maxWidth="lg" style={{ marginTop: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
+    <Grid container spacing={2} style={{ width: '100%', margin: '0 auto', backgroundColor: 'white', padding: '10px', borderRadius: '4px', height: 'calc(100vh - 100px)' }}>
       <Typography variant="h4" gutterBottom>
         Admin Panel
       </Typography>
@@ -290,7 +290,7 @@ const AdminPanel = () => {
         </Dialog>
       )}
       {/* ... (existing JSX code) */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', margin: '0 auto' }}>
         <Pagination
           count={Math.ceil(totalUsers / rowsPerPage)}
           page={page + 1}
@@ -317,7 +317,7 @@ const AdminPanel = () => {
           sx={{ backgroundColor: snackbarColor }} // Set background color based on snackbarColor
         />
       </Snackbar>
-    </Container>
+    </Grid>
   );
 };
 

@@ -120,8 +120,7 @@ const LoginForm = () => {
         >
           <Typography variant="body1" sx={{ marginBottom: 2 }}>
             Welcome back! You are logging in to the{" "}
-            <strong>Project Allocation Tool</strong>. If you are the right person,
-            please proceed.
+            <strong>Project Allocation Tool</strong>.
           </Typography>
           <TextField
             label="Email"

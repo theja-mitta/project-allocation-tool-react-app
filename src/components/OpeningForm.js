@@ -231,177 +231,176 @@ const OpeningForm = () => {
 };
 
   return (
-    <Container
-      component="main"
-      maxWidth="sm"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '70vh',
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '4px',
-      }}
-    >
-      <Typography variant="h5" gutterBottom>
-        Post Opening
-      </Typography>
-      <Box
-        component="form"
-        noValidate
-        sx={{
-          width: '100%',
-          p: 2,
+    <Grid container spacing={2} style={{ width: '100%', margin: '0 auto', backgroundColor: 'white', padding: '10px', borderRadius: '4px', height: 'calc(100vh - 100px)'  }}>
+        <Container
+          component="main"
+          maxWidth="sm"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '80vh',
+            backgroundColor: 'white',
+            padding: '10px',
+            borderRadius: '4px',
         }}
       >
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              label="Title"
-              variant="outlined"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              fullWidth
-              margin="normal"
-              error={Boolean(errors.title)}
-              helperText={errors.title}
-              inputProps={{
-                minLength: 4,
-              }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Details"
-              variant="outlined"
-              name="details"
-              value={formData.details}
-              onChange={handleChange}
-              required
-              fullWidth
-              margin="normal"
-              error={Boolean(errors.details)}
-              helperText={errors.details}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth error={Boolean(errors.level)}>
-              <InputLabel>Level</InputLabel>
-              <Select
-                label="Level"
-                name="level"
-                value={formData.level}
-                onChange={handleChange}
-              >
-                <MenuItem value={1}>1</MenuItem>
-                <MenuItem value={2}>2</MenuItem>
-                <MenuItem value={3}>3</MenuItem>
-              </Select>
-              {Boolean(errors.level) && (
-                <Typography variant="caption" color="error">
-                  {errors.level}
-                </Typography>
-              )}
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Location"
-              variant="outlined"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              fullWidth
-              margin="normal"
-              error={Boolean(errors.location)}
-              helperText={errors.location}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth error={Boolean(errors.skills)}>
-              <InputLabel>Skills</InputLabel>
-              <Select
-                label="Skills"
-                name="skills"
-                multiple
-                value={formData.skills}
-                onChange={handleChange}
-              >
-                {skills.map((skill) => (
-                  <MenuItem key={skill.id} value={skill.id}>
-                    {skill.title}
-                  </MenuItem>
-                ))}
-              </Select>
-              {Boolean(errors.skills) && (
-                <Typography variant="caption" color="error">
-                  {errors.skills}
-                </Typography>
-              )}
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-          <FormControl fullWidth error={Boolean(errors.project)}>
-            <InputLabel>Project</InputLabel>
-            <Select
-              label="Project"
-              name="project"
-              value={formData.project}
-              onChange={handleChange}
-            >
-              {Array.isArray(projects) &&
-                projects.map((project) => (
-                  <MenuItem key={project.id} value={project.id}>
-                    {project.title}
-                  </MenuItem>
-                ))}
-            </Select>
-            {Boolean(errors.project) && (
-              <Typography variant="caption" color="error">
-                {errors.project}
-              </Typography>
-            )}
-        </FormControl>
-          </Grid>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sx={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
-        >
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Submit
-          </Button>
-        </Grid>
-        {successMessage && (
-          <Typography variant="body1" color="success" align="center">
-            {successMessage}
-          </Typography>
-        )}
-      </Box>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={4000} // Adjust the duration as needed
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      >
-        <SnackbarContent
-          style={{
-            backgroundColor:
-              snackbarSeverity === 'success' ? '#43a047' : '#d32f2f',
+        <Typography variant="h5" gutterBottom>
+          Post Opening
+        </Typography>
+        <Box
+          component="form"
+          noValidate
+          sx={{
+            width: '100%',
+            p: 2,
           }}
-          message={<span>{snackbarMessage}</span>}
-        />
-      </Snackbar>
-    </Container>
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Title"
+                variant="outlined"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+                fullWidth
+                error={Boolean(errors.title)}
+                helperText={errors.title}
+                inputProps={{
+                  minLength: 4,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Details"
+                variant="outlined"
+                name="details"
+                value={formData.details}
+                onChange={handleChange}
+                required
+                fullWidth
+                error={Boolean(errors.details)}
+                helperText={errors.details}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth error={Boolean(errors.level)}>
+                <InputLabel>Level</InputLabel>
+                <Select
+                  label="Level"
+                  name="level"
+                  value={formData.level}
+                  onChange={handleChange}
+                >
+                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={2}>2</MenuItem>
+                  <MenuItem value={3}>3</MenuItem>
+                </Select>
+                {Boolean(errors.level) && (
+                  <Typography variant="caption" color="error">
+                    {errors.level}
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Location"
+                variant="outlined"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                required
+                fullWidth
+                error={Boolean(errors.location)}
+                helperText={errors.location}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth error={Boolean(errors.skills)}>
+                <InputLabel>Skills</InputLabel>
+                <Select
+                  label="Skills"
+                  name="skills"
+                  multiple
+                  value={formData.skills}
+                  onChange={handleChange}
+                >
+                  {skills.map((skill) => (
+                    <MenuItem key={skill.id} value={skill.id}>
+                      {skill.title}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {Boolean(errors.skills) && (
+                  <Typography variant="caption" color="error">
+                    {errors.skills}
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+            <FormControl fullWidth error={Boolean(errors.project)}>
+              <InputLabel>Project</InputLabel>
+              <Select
+                label="Project"
+                name="project"
+                value={formData.project}
+                onChange={handleChange}
+              >
+                {Array.isArray(projects) &&
+                  projects.map((project) => (
+                    <MenuItem key={project.id} value={project.id}>
+                      {project.title}
+                    </MenuItem>
+                  ))}
+              </Select>
+              {Boolean(errors.project) && (
+                <Typography variant="caption" color="error">
+                  {errors.project}
+                </Typography>
+              )}
+          </FormControl>
+            </Grid>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            sx={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
+          >
+            <Button variant="contained" color="primary" onClick={handleSubmit}>
+              Submit
+            </Button>
+          </Grid>
+          {successMessage && (
+            <Typography variant="body1" color="success" align="center">
+              {successMessage}
+            </Typography>
+          )}
+        </Box>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={4000} // Adjust the duration as needed
+          onClose={() => setSnackbarOpen(false)}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          <SnackbarContent
+            style={{
+              backgroundColor:
+                snackbarSeverity === 'success' ? '#43a047' : '#d32f2f',
+            }}
+            message={<span>{snackbarMessage}</span>}
+          />
+        </Snackbar>
+      </Container>
+    </Grid>
   );
 };
 

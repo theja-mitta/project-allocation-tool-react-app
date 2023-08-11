@@ -91,7 +91,7 @@ const CandidateAllocationDashboard = () => {
   };
 
   return (
-    <Container maxWidth="lg" style={{ marginTop: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
+    <Container maxWidth="lg" style={{ marginTop: '20px', backgroundColor: 'white', padding: '10px', borderRadius: '4px' }}>
       <Typography variant="h4" gutterBottom>
         Candidate Allocation Dashboard
       </Typography>

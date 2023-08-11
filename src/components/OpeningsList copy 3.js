@@ -355,7 +355,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser }) => {
   };
 
   return (
-    <Grid container spacing={2} style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <Grid container spacing={2} style={{ width: '100%', margin: '0 auto' }}>
       <Grid item xs={12} sm={4}>
         {/* Skills Filter */}
         <FormControl variant="outlined" fullWidth>

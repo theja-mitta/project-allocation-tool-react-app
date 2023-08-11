@@ -245,7 +245,7 @@ const PendingApplicationsList = () => {
   
 
   return (
-    <Grid container spacing={2} style={{ maxWidth: '1200px', margin: '0 auto', backgroundColor: 'white', padding: '20px', borderRadius: '4px'  }}>
+    <Grid container spacing={2} style={{ width: '100%', margin: '0 auto', backgroundColor: 'white', padding: '10px', borderRadius: '4px', height: 'calc(100vh - 100px)'  }}>
       <Grid item xs={12}>
         <TableContainer component={Paper}>
           <Table>

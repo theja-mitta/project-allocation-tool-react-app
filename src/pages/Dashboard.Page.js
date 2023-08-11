@@ -59,7 +59,7 @@
       <div>
         {/* <Header menuOptions={menuOptions} value={value} onChange={handleChange} /> */}
         <AppBarMenu menuOptions={menuOptions} value={value} onChange={handleChange} />
-        <Box p={3} style={{ marginTop: '64px' }} className="background-container">
+        <Box p={2} style={{ marginTop: '64px' }} className="background-container">
             {/* Conditional rendering based on the selected tab index */}
             {menuOptions[value]?.component && React.createElement(menuOptions[value].component)}
           </Box>

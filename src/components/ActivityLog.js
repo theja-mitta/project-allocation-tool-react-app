@@ -85,7 +85,7 @@ const ActivityLog = () => {
   };
 
   return (
-    <Grid container spacing={2} style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <Grid container style={{ width: '100%', margin: '0 auto', height: 'calc(100vh - 100px)' }}>
       <Grid item xs={12}>
         <TableContainer component={Paper}>
           <Table>

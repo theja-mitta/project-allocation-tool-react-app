@@ -39,7 +39,7 @@ const CandidateAllocationDashboard = () => {
   ]);
   const [totalElements, setTotalElements] = useState(0);
   const [freePoolTotalElements, setFreePoolTotalElements] = useState(0);
-  const rowsPerPage = 5;
+  const rowsPerPage = 9;
 
   useEffect(() => {
     fetchFreePoolUsers();
@@ -117,12 +117,8 @@ const CandidateAllocationDashboard = () => {
   };
 
   return (
-    <Container maxWidth="lg" style={{ marginTop: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
-      <Typography variant="h4" gutterBottom>
-        Allocation Dashboard
-      </Typography>
-      <Box display="flex">
-        <Box width="50%" marginRight="20px">
+    <Grid container spacing={2} style={{ display: 'flex', width: '100%', justifyContent: 'space-around', margin: '0 auto', backgroundColor: 'white', padding: '10px', borderRadius: '4px', height: 'calc(100vh - 100px)'  }}>
+        <Box flex="0 0 48%" justifyContent={'center'}>
           <Typography variant="h6" gutterBottom>
             {selectedChartSection === 'free_pool' ? 'Free Pool Users' : `Allocated Users ${timePeriodTextMap[selectedTimePeriod]}`}
           </Typography>
@@ -219,13 +215,13 @@ const CandidateAllocationDashboard = () => {
               </TableContainer>
             )}
         </Box>
-        <Box width="50%">
+        <Box flex="0 0 48%" justifyContent={'center'}>
           <Tabs value={selectedTimePeriod} onChange={handleTabChange} indicatorColor="primary" textColor="primary">
             <Tab value="last_week" label="Last Week" />
             <Tab value="last_month" label="Last Month" />
             <Tab value="last_year" label="Last Year" />
           </Tabs>
-          <Paper style={{ padding: '20px' }}>
+          <Paper style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
             <PieChart width={400} height={300}>
               <Pie
                 data={chartData}
@@ -244,8 +240,7 @@ const CandidateAllocationDashboard = () => {
             </PieChart>
           </Paper>
         </Box>
-      </Box>
-    </Container>
+    </Grid>
   );
 };
 

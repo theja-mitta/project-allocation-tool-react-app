@@ -344,7 +344,7 @@ const OpeningsList = () => {
   
 
   return (
-    <Grid container spacing={2} style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <Grid container spacing={2} style={{ width: '100%', margin: '0 auto' }}>
       <Grid item xs={12} sm={4}>
         {/* Skills Filter */}
         <FormControl variant="outlined" fullWidth>
@@ -409,7 +409,7 @@ const OpeningsList = () => {
 
       {filteredOpenings ? (
         <Grid item xs={12}>
-          <TableContainer component={Paper} style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <TableContainer component={Paper} style={{ width: '100%', margin: '0 auto' }}>
             <Table>
               <TableHead>
                 <TableRow>

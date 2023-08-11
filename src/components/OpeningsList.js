@@ -407,7 +407,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
     };
 
     // Array with possible status values
-    const statusOptions = ['ACTIVE', 'CLOSED'];
+    const statusOptions = ['PENDING', 'ACTIVE', 'CLOSED'];
 
     return (
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -487,7 +487,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
   };
 
   return (
-    <Grid container spacing={2} style={{ maxWidth: '1200px', margin: '0 auto', backgroundColor: 'white', padding: '20px', borderRadius: '4px'  }}>
+    <Grid container spacing={2} style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'start', margin: '0 auto', backgroundColor: 'white', padding: '10px', borderRadius: '4px', height: 'calc(100vh - 100px)'  }}>
       <Grid item xs={12} sm={4}>
         {/* Skills Filter */}
         <FormControl variant="outlined" fullWidth>
