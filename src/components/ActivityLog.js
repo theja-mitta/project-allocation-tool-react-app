@@ -162,6 +162,9 @@ const ActivityLog = () => {
           {selectedUser && (
             <div>
               <DialogContentText>
+                <strong>Id:</strong> {selectedUser.id}
+              </DialogContentText>
+              <DialogContentText>
                 <strong>Name:</strong> {selectedUser.name}
               </DialogContentText>
               <DialogContentText>

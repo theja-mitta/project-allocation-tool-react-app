@@ -64,7 +64,6 @@ const ScheduleInterviewModal = ({ applicationId, onClose, onInterviewScheduled }
   
     ProjectAllocationService.scheduleInterview(applicationId, interviewData, authToken)
       .then((response) => {
-        console.log(response);
         // Show success message based on the response (adjust this according to your API's response structure)
         showSnackbar(response.message || 'Interview scheduled successfully', 'success');
         setTimeout(() => {

@@ -32,7 +32,6 @@ const EditProfileDialog = ({ open, onClose }) => {
       try {
           const response = await AuthService.getUser(authToken);
           setUserDetails(response);
-          console.log('res', response.skills.map(skill => skill.title));
           setSelectedSkills(response.skills.map(skill => skill.title));
       } catch (error) {
           console.error('Error fetching user details:', error);
@@ -42,7 +41,6 @@ const EditProfileDialog = ({ open, onClose }) => {
   const fetchAllSkills = async () => {
       try {
           const response = await ProjectAllocationService.getSkills(authToken);
-          console.log('fetchAllSkills', response);
           setAllSkills(response);
       } catch (error) {
           console.error('Error fetching skills:', error);
@@ -64,7 +62,6 @@ const EditProfileDialog = ({ open, onClose }) => {
     });
   
     const updatedUserDetails = { ...userDetails, skills: updatedSkills };
-    console.log('updatedUserDetails', updatedUserDetails);
     try {
       // Make an API call to update user details
       await AuthService.updateUserDetails(user.id, updatedUserDetails, authToken);

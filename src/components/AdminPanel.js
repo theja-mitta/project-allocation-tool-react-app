@@ -104,7 +104,6 @@ const AdminPanel = () => {
   
 
   const handleEditUser = (user) => {
-    console.log(user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase());
     setEditingUser(user);
     setRole(user.role); // Don't change the role value here
     setName(user.name);
@@ -134,8 +133,6 @@ const AdminPanel = () => {
         email,
         role: role.toUpperCase(),
       };
-      console.log('Updating user', updatedUser);
-      console.log('token', authToken);
       await AuthService.updateUser(authToken, editingUser.id, updatedUser);
       fetchUsers();
       handleCloseDialog();
@@ -153,9 +150,15 @@ const AdminPanel = () => {
       showSuccessSnackbar('User deleted successfully.');
     } catch (error) {
       console.error('Error deleting user:', error);
-      showErrorSnackbar('Error deleting user.');
+  
+      if (error.message === 'Cannot delete this user. This user is scheduled to conduct interviews.') {
+        showErrorSnackbar('Cannot delete this user. This user is scheduled to conduct interviews.');
+      } else {
+        showErrorSnackbar('Error deleting user.');
+      }
     }
   };
+  
 
   const handleCloseDialog = () => {
     setEditingUser(null);
@@ -170,8 +173,8 @@ const AdminPanel = () => {
   };
 
   return (
-    <Grid container spacing={2} style={{ width: '100%', margin: '0 auto', backgroundColor: 'white', padding: '10px', borderRadius: '4px', height: 'calc(100vh - 100px)' }}>
-      <Typography variant="h4" gutterBottom>
+    <Grid container spacing={2} style={{ width: '100%', margin: '0 auto', backgroundColor: 'white', padding: '20px', borderRadius: '4px', height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
+      <Typography variant="h5" gutterBottom>
         Admin Panel
       </Typography>
       <AppBar position="static" color="default" style={{ marginBottom: '20px' }}>

@@ -5,16 +5,6 @@ import axios from 'axios';
 const PROJECT_ALLOCATION_SERVICE_BASE_URL = 'http://localhost:9091'; 
 
 export class ProjectAllocationService {
-    // static getProjectOpenings= async (authToken, pageSize, pageNumber, showApplied, ownOpenings) => {
-    //     try {
-    //         const response = await axios.get(`${PROJECT_ALLOCATION_SERVICE_BASE_URL}/api/v1/openings?pageSize=${pageSize}&pageNumber=${pageNumber}`, { headers: {"Authorization" : `Bearer ${authToken}`} });
-    //         // console.log(response.data.openings);
-    //         return response.data;
-    //     } catch (error) {
-    //         throw new Error('Unable to get project openings');
-    //     }
-    // }
-
     static getProjectOpenings = async (authToken, pageSize, pageNumber, showApplied, ownOpenings) => {
         try {
           let url = `${PROJECT_ALLOCATION_SERVICE_BASE_URL}/api/v1/openings?pageSize=${pageSize}&pageNumber=${pageNumber}`;
@@ -37,7 +27,6 @@ export class ProjectAllocationService {
     static getProjectsForUser = async (authToken, userId) => {
         try {
             const response = await axios.get(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/projects/users/' + userId, { headers: {"Authorization" : `Bearer ${authToken}`} });
-            console.log('response', response);
             return response.data;
         } catch (error) {
             throw new Error('Unable to get projects for user with id' + userId + ': ' + error.message);
@@ -66,7 +55,6 @@ export class ProjectAllocationService {
         console.log('Fetching application details')
         try {
             const response = await axios.get(`${PROJECT_ALLOCATION_SERVICE_BASE_URL}/api/v1/applications/details?openingId=${openingId}&candidateId=${userId}`, { headers: {"Authorization" : `Bearer ${authToken}`} });
-            console.log('response', response);
             return response.data;
         } catch (error) {
             console.error(error);
@@ -85,9 +73,7 @@ export class ProjectAllocationService {
             },
           }
         );
-    
-        console.log('check here', response);
-    
+        
         if (response.status === 200) {
           return true; // Indicates success
         } else {
@@ -96,7 +82,6 @@ export class ProjectAllocationService {
           );
         }
       } catch (error) {
-        console.log('checkerror', error);
         throw error; // Rethrow the error to handle it in the component
       }
     };
@@ -113,9 +98,7 @@ export class ProjectAllocationService {
             },
           }
         );
-    
-        console.log('check here', response);
-    
+        
         if (response.status === 200) {
           return true; // Indicates success
         } else {
@@ -124,7 +107,6 @@ export class ProjectAllocationService {
           );
         }
       } catch (error) {
-        console.log('checkerror', error);
         throw error; // Rethrow the error to handle it in the component
       }
     };
@@ -175,7 +157,6 @@ export class ProjectAllocationService {
     static getSkills = async (authToken) => {
         try {
             const response = await axios.get(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/skills', { headers: {"Authorization" : `Bearer ${authToken}`} });
-            console.log('get all skills response', response);
             return response.data;
         } catch (error) {
             throw new Error('Unable to fetch the skills');
@@ -190,8 +171,8 @@ export class ProjectAllocationService {
       } catch (error) {
           if (error.response) {
               const errorData = error.response.data;
-              if (errorData.message) {
-                  throw new Error(errorData.message);
+              if (errorData) {
+                  throw new Error(errorData);
               }
           }
           throw new Error('Unable to create the opening at the moment. Please try again later');
@@ -200,7 +181,7 @@ export class ProjectAllocationService {
 
     static createProject = async (payload, authToken) => {
       try {
-          const response = await axios.post(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/projects/', payload, { headers: {"Authorization" : `Bearer ${authToken}`} });
+          const response = await axios.post(PROJECT_ALLOCATION_SERVICE_BASE_URL + '/api/v1/projects', payload, { headers: {"Authorization" : `Bearer ${authToken}`} });
           return response;
       } catch (error) {
           throw new Error('Unable to create the project');

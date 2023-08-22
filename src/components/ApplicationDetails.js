@@ -38,7 +38,6 @@ const ApplicationDetails = ({ openingId, loggedinUser, onClose }) => {
     const fetchApplicationDetails = async () => {
       try {
         const applicationDetails = await ProjectAllocationService.fetchApplicationDetails(openingId, loggedinUser.id, authToken);
-        console.log(`Application details: ${applicationDetails}`);
         setApplicationData(applicationDetails);
       } catch (error) {
         console.error(error);
@@ -120,18 +119,6 @@ const ApplicationDetails = ({ openingId, loggedinUser, onClose }) => {
         </Typography>
         <Typography style={labelStyle}>Interviews scheduled:</Typography>
         {interviewsScheduledContent}
-        {/* <Tooltip title="View interview details">
-          <Typography
-            style={{
-              ...valueStyle,
-              display: 'inline-block',
-              textDecoration: 'underline',
-            }}
-            onClick={handleInterviewDialogOpen}
-          >
-            {applicationData.interviews.length}
-          </Typography>
-        </Tooltip> */}
         {/* Add more application details here if needed */}
       </Grid>
       <Dialog open={projectDialogOpen} onClose={handleDialogClose}>

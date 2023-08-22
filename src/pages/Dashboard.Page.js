@@ -14,8 +14,6 @@
   const UserDashboard = () => {
     const userPermissions = useSelector((state) => state.auth.userPermissions);
     const loggedinUser = useSelector((state) => state.auth.user);
-    console.log(userPermissions);
-    console.log(loggedinUser);
 
   // Define menu options mapping based on user permissions
   const menuOptionsMapping = {
@@ -25,8 +23,6 @@
     'RECRUITER_OTHER_OPENINGS': { label: 'Openings by Other Recruiters', component: () => <OpeningsList userType="recruiter" showApplied={false} loggedinUser={loggedinUser} ownOpenings={false}/> },
     'ADMIN_OWN_OPENINGS': { label: 'Openings Posted by You', component: () => <OpeningsList userType="admin" showApplied={false} loggedinUser={loggedinUser} ownOpenings={true}/> },
     'ADMIN_OTHER_OPENINGS': { label: 'Openings by Other Recruiters', component: () => <OpeningsList userType="admin" showApplied={false} loggedinUser={loggedinUser} ownOpenings={false}/> },
-    // 'VIEW_ALL_OPENINGS': { label: 'Project Openings', component: OpeningsList },
-    // 'VIEW_APPLIED_OPENINGS': { label: 'Openings applied', component: AppliedOpeningsList },
     'VIEW_PENDING_APPLICATIONS': { label: 'Pending Requests', component: PendingApplicationsList },
     'MANAGE_USERS': { label: 'Manage Users', component: AdminPanel },
     'CREATE_OPENING': { label: 'Create Opening', component: OpeningForm },
@@ -57,7 +53,6 @@
 
     return (
       <div>
-        {/* <Header menuOptions={menuOptions} value={value} onChange={handleChange} /> */}
         <AppBarMenu menuOptions={menuOptions} value={value} onChange={handleChange} />
         <Box p={2} style={{ marginTop: '64px' }} className="background-container">
             {/* Conditional rendering based on the selected tab index */}

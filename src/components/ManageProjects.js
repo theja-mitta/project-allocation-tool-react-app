@@ -18,7 +18,6 @@ import {
   AppBar,
   Box,
   DialogContentText,
-  Container,
   Tooltip,
   Pagination,
   Grid
@@ -78,6 +77,7 @@ const ManageProjects = () => {
   const fetchProjects = async () => {
     try {
       const response = await ProjectAllocationService.getProjects(rowsPerPage, page, authToken);
+      console.log(response);
       setProjects(response.projects);
       setTotalElements(response.totalElements);
     } catch (error) {
@@ -120,7 +120,7 @@ const ManageProjects = () => {
     };
 
     return (
-      <Grid container spacing={0} style={{ width: '100%', margin: '0 auto', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '88vh' }}>
+      <Grid container spacing={0} style={{ width: '100%', margin: '0 auto', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100vh'}}>
           <AppBar position="static" style={{ backgroundColor: 'transparent', color: 'black' }}>
             <Tabs value={tabValue} onChange={handleTabChange} style={{width: '100%', margin: '0 auto'}}>
               <Tab label="Manage Projects" />
@@ -263,7 +263,7 @@ const ManageProjects = () => {
 
 const TabPanel = ({ children, value, index }) => (
   <div role="tabpanel" hidden={value !== index}>
-    {value === index && <Box p={2}>{children}</Box>}
+    {value === index && <Box p={3}>{children}</Box>}
   </div>
 );
 

@@ -137,7 +137,6 @@ const PendingApplicationsList = () => {
   const fetchData = async () => {
     try {
       const response = await ProjectAllocationService.getAllApplications('APPLIED', rowsPerPage, page, authToken);
-      console.log(response);
       if (response.applications.length > 0) {
         setPendingApplications(response.applications);
         
@@ -296,11 +295,6 @@ const PendingApplicationsList = () => {
                     Actions
                   </Typography>
                 </TableCell>
-                {/* <TableCell align="center">
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    Allocate Applicant
-                  </Typography>
-                </TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>

@@ -13,26 +13,3 @@ const store = configureStore({
 const persistor = persistStore(store);
 
 export { store, persistor };
-
-
-// import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-// import rootReducer from './reducers/rootReducer';
-
-// const authMiddleware = (store) => (next) => (action) => {
-//   const result = next(action);
-
-//   // if (action.type === 'SET_JWT_TOKEN') {
-//   //   localStorage.setItem('authToken', JSON.stringify(action.payload));
-//   // } else if (action.type === 'CLEAR_JWT_TOKEN') {
-//   //   localStorage.removeItem('authToken');
-//   // }
-
-//   return result;
-// };
-
-// const store = configureStore({
-//   reducer: rootReducer,
-//   middleware: [authMiddleware, ...getDefaultMiddleware()],
-// });
-
-// export default store;

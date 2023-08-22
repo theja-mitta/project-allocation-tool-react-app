@@ -61,17 +61,9 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
       // Make the API call to apply for the opening
       const response = await ProjectAllocationService.applyForOpening(openingId, userId, authToken);
       // Process the response if needed
-      console.log(response);
 
       // Update the appliedOpenings state
       setAppliedOpenings((prevAppliedOpenings) => new Set(prevAppliedOpenings).add(openingId));
-
-      // // Update the filteredOpenings state
-      // setFilteredOpenings((prevFilteredOpenings) =>
-      //   prevFilteredOpenings.map((opening) =>
-      //     opening.id === openingId ? { ...opening, applied: true } : opening
-      //   )
-      // );
 
       // Set the last applied opening ID
       setLastAppliedOpeningId(openingId);
@@ -207,34 +199,6 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
     }
   };
 
-  // // Function to save the edited opening data with an API call
-  // const saveUpdatedOpening = async (updatedOpening) => {
-  //   try {
-  //     // Create an array of skill IDs from the updatedOpening.skills array
-  //     const skillIds = updatedOpening.skills.map((skill) => ({ id: skill.id }));
-
-  //     // Create the final payload with skill IDs and other opening properties
-  //     const payload = {
-  //       title: updatedOpening.title,
-  //       details: updatedOpening.details,
-  //       level: updatedOpening.level,
-  //       location: updatedOpening.location,
-  //       skills: skillIds,
-  //       status: updatedOpening.status
-  //     };
-
-  //     // Make the API call with the payload
-  //     const response = await ProjectAllocationService.updateOpening(updatedOpening.id, payload, authToken);
-  //     // Process the response if needed
-  //     console.log(response);
-
-  //     console.log('Opening data updated successfully:', updatedOpening);
-  //   } catch (error) {
-  //     // Handle error if the API call fails
-  //     console.error('Error updating opening data:', error);
-  //   }
-  // };
-
   const saveUpdatedOpening = async (updatedOpening) => {
     try {
       // Create an array of skill IDs from the updatedOpening.skills array
@@ -253,7 +217,6 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
       // Make the API call with the payload
       const response = await ProjectAllocationService.updateOpening(updatedOpening.id, payload, authToken);
       // Process the response if needed
-      console.log(response);
   
       // Show success snackbar
       showSnackbar('Opening data updated successfully', 'green');
@@ -487,7 +450,7 @@ const OpeningsList = ({ userType, showApplied, loggedinUser, ownOpenings }) => {
   };
 
   return (
-    <Grid container spacing={2} style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'start', margin: '0 auto', backgroundColor: 'white', padding: '10px', borderRadius: '4px', height: 'calc(100vh - 100px)'  }}>
+    <Grid container spacing={2} style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'start', margin: '0 auto', backgroundColor: 'white', padding: '10px', borderRadius: '4px' }}>
       <Grid item xs={12} sm={4}>
         {/* Skills Filter */}
         <FormControl variant="outlined" fullWidth>

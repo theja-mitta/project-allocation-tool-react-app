@@ -1,56 +1,5 @@
-// // authReducer.js
-// import { createSlice } from '@reduxjs/toolkit';
-
-// const initialState = {
-//   authToken: null,
-// };
-
-// const authSlice = createSlice({
-//   name: 'auth',
-//   initialState,
-//   reducers: {
-//     setAuthToken(state, action) {
-//       state.authToken = action.payload;
-//     },
-//     // Add other actions if needed
-//   },
-// });
-
-// export const { setAuthToken } = authSlice.actions;
-
-// export default authSlice; // Export the slice itself
-
-
-
-// import { createSlice } from '@reduxjs/toolkit';
-
-// const initialState = {
-//   authToken: null,
-// };
-
-// const authSlice = createSlice({
-//   name: 'auth',
-//   initialState,
-//   reducers: {
-//     setAuthToken(state, action) {
-//       console.log("PERSISTENT STATE: " + action.payload.payload);
-//       state.authToken = action.payload.payload;
-//     },
-//     clearAuthToken(state) {
-//       state.authToken = null;
-//     },
-//     // Add other actions if needed
-//   },
-// });
-
-// export const { setAuthToken, clearAuthToken } = authSlice.actions;
-
-// export default authSlice.reducer;
-
-
 import { createSlice } from '@reduxjs/toolkit';
 import { AuthService } from '../../services/api/auth';
-import { Token } from '@mui/icons-material';
 
 const initialState = {
   authToken: null,
@@ -90,7 +39,6 @@ export const { setAuthToken, setUserPermissions, setUserRole, setUser, resetStat
 
 // Thunk action to fetch user permissions after setting the auth token
 export const setAuthTokenAndFetchUserPermissions = (authToken) => async (dispatch) => {
-  console.log("authToken"+ authToken);
   try {
     dispatch(setAuthToken(authToken)); // Set the auth token in the state
 

@@ -69,7 +69,6 @@ const OpeningForm = () => {
         const uniqueSkillsData = Array.from(
           new Map(skillsData.map((skill) => [skill.id, skill])).values()
         );
-        console.log(uniqueSkillsData);  
         setSkills(uniqueSkillsData);
       } catch (error) {
         console.error('Error fetching skills:', error);
@@ -80,7 +79,6 @@ const OpeningForm = () => {
     const fetchProjects = async () => {
       try {
         const projectsData = await ProjectAllocationService.getAllProjects(authToken);
-        console.log('projectsData', projectsData);
         setProjects(projectsData);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -212,7 +210,6 @@ const OpeningForm = () => {
                 payload,
                 authToken
             );
-            console.log('Opening created:', response);
             showSnackbar('Opening created successfully!', 'success');
             setSuccessMessage('Opening created successfully!');
             setFormData(initialState);

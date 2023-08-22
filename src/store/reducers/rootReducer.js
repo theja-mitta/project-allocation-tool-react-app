@@ -18,13 +18,3 @@ const rootReducer = combineReducers({
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export default persistedReducer;
-
-// import { combineReducers } from 'redux';
-// import authSlice from './authReducer';
-
-// const rootReducer = combineReducers({
-//   auth: authSlice,
-//   // Add other reducers here if needed
-// });
-
-// export default rootReducer;
